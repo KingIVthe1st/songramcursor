@@ -37,7 +37,12 @@ export function SongForm({ onSongCreated }) {
     'Folk',
     'Electronic',
     'Hip Hop',
-    'Blues'
+    'Blues',
+    'Trap Rap',
+    'Old Skool Hip Hop',
+    'Ballads',
+    'Reggae',
+    'Soul'
   ];
 
   const relationships = [
@@ -256,10 +261,12 @@ export function SongForm({ onSongCreated }) {
             }}>
               Your relationship
             </label>
-            <select
+            <input
+              type="text"
               name="relationship"
               value={formData.relationship}
               onChange={handleInputChange}
+              placeholder="wife, friend, daughter, partner..."
               style={{
                 width: '100%',
                 padding: '1rem 1.25rem',
@@ -282,12 +289,7 @@ export function SongForm({ onSongCreated }) {
                 e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
               }}
               required
-            >
-              <option value="">wife, friend, daughter, partner...</option>
-              {relationships.map((relationship) => (
-                <option key={relationship} value={relationship}>{relationship}</option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
