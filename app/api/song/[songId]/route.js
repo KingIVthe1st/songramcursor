@@ -1,3 +1,14 @@
+// Import the songRequests Map from the generate route
+// We need to access the same Map instance
+let songRequests;
+
+// This is a workaround to access the same Map instance
+// In production, use a proper database or shared storage
+if (typeof global.songRequests === 'undefined') {
+  global.songRequests = new Map();
+}
+songRequests = global.songRequests;
+
 export async function GET(request, { params }) {
   try {
     const { songId } = params;
@@ -9,29 +20,54 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Import the songRequests Map from the generate route
-    // Since we can't directly import from another route, we'll need to restructure this
-    // For now, we'll return a message indicating the song was generated
+    console.log('🎵 Song requested:', songId);
     
-    console.log('Song requested:', songId);
+    // Get the song data from our in-memory storage
+    const songData = songRequests.get(songId);
     
-    // In a real production app, you would:
-    // 1. Query your database for the song details
-    // 2. Retrieve the audio file from cloud storage
-    // 3. Stream the audio file back to the client
+    if (!songData) {
+      console.error('❌ Song not found:', songId);
+      return Response.json(
+        { error: 'Song not found. It may have expired or not been generated yet.' },
+        { status: 404 }
+      );
+    }
+
+    if (songData.status !== 'completed') {
+      console.log('⏳ Song still processing:', songId, songData.status);
+      return Response.json(
+        { error: 'Song is still being generated. Please wait.' },
+        { status: 202 }
+      );
+    }
+
+    if (!songData.audioBuffer) {
+      console.error('❌ No audio buffer found for song:', songId);
+      return Response.json(
+        { error: 'Audio data not found for this song.' },
+        { status: 404 }
+      );
+    }
+
+    console.log('✅ Serving audio for song:', songId, 'Size:', songData.audioBuffer.byteLength, 'bytes');
+
+    // Convert the ArrayBuffer to a Buffer and serve it as audio
+    const audioBuffer = Buffer.from(songData.audioBuffer);
     
-    // For now, return a success message since the song was generated
-    return Response.json({
-      message: 'Song generated successfully!',
-      songId,
-      status: 'completed',
-      note: 'Audio file is available. In production, this would stream the actual audio from cloud storage.'
+    return new Response(audioBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.length.toString(),
+        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Content-Disposition': `attachment; filename="song_${songId}.mp3"`
+      }
     });
 
   } catch (error) {
-    console.error('Error serving song:', error);
+    console.error('❌ Error serving song:', error);
     return Response.json(
-      { error: 'Failed to serve song' },
+      { error: 'Failed to serve song. Please try again.' },
       { status: 500 }
     );
   }
