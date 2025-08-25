@@ -45,30 +45,75 @@ export function SongStatus({ songId, onReset }) {
 
   if (!songData) {
     return (
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-        <p className="text-white text-lg">Loading song status...</p>
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(8px)',
+        borderRadius: '0.5rem',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          animation: 'spin 1s linear infinite',
+          borderRadius: '50%',
+          height: '3rem',
+          width: '3rem',
+          border: '2px solid white',
+          borderTopColor: 'transparent',
+          margin: '0 auto 1rem'
+        }}></div>
+        <p style={{ color: 'white', fontSize: '1.125rem' }}>Loading song status...</p>
       </div>
     );
   }
 
   if (songData.status === 'processing') {
     return (
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center">
-        <div className="mb-6">
-          <div className="text-6xl mb-4">🎵</div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(8px)',
+        borderRadius: '0.5rem',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ fontSize: '3.75rem', marginBottom: '1rem' }}>🎵</div>
+          <h2 style={{
+            fontSize: '1.875rem',
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: '1rem'
+          }}>
             Creating Your Song...
           </h2>
-          <p className="text-blue-200 text-lg mb-6">
+          <p style={{
+            color: '#bfdbfe',
+            fontSize: '1.125rem',
+            marginBottom: '1.5rem'
+          }}>
             Our AI is composing a personalized song just for you
           </p>
         </div>
 
         {/* Song Details */}
-        <div className="bg-white/10 rounded-lg p-6 mb-8 text-left">
-          <h3 className="text-xl font-semibold text-white mb-4">Song Details</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-blue-200">
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '0.5rem',
+          padding: '1.5rem',
+          marginBottom: '2rem',
+          textAlign: 'left'
+        }}>
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            color: 'white',
+            marginBottom: '1rem'
+          }}>Song Details</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1rem',
+            color: '#bfdbfe'
+          }}>
             <div>
               <p><strong>Occasion:</strong> {songData.occasion}</p>
               <p><strong>For:</strong> {songData.recipientNames}</p>
@@ -82,26 +127,76 @@ export function SongStatus({ songId, onReset }) {
           </div>
         </div>
 
-        <div className="mb-8">
-          <div className="w-full bg-white/20 rounded-full h-3 mb-4">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+        <div style={{ marginBottom: '2rem' }}>
+          <div style={{
+            width: '100%',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderRadius: '9999px',
+            height: '0.75rem',
+            marginBottom: '1rem'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              height: '0.75rem',
+              borderRadius: '9999px',
+              width: '60%',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}></div>
           </div>
-          <p className="text-white">
+          <p style={{ color: 'white' }}>
             Estimated time remaining: {timeRemaining} seconds
           </p>
         </div>
 
-        <div className="space-y-4 text-blue-200">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          color: '#bfdbfe'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <div style={{
+              width: '0.75rem',
+              height: '0.75rem',
+              backgroundColor: '#60a5fa',
+              borderRadius: '50%',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}></div>
             <span>Analyzing your story and emotions</span>
           </div>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <div style={{
+              width: '0.75rem',
+              height: '0.75rem',
+              backgroundColor: '#a78bfa',
+              borderRadius: '50%',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}></div>
             <span>Composing lyrics and melody in {songData.musicStyle} style</span>
           </div>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse"></div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <div style={{
+              width: '0.75rem',
+              height: '0.75rem',
+              backgroundColor: '#ec4899',
+              borderRadius: '50%',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}></div>
             <span>Generating vocals with AI voice</span>
           </div>
         </div>
@@ -111,21 +206,52 @@ export function SongStatus({ songId, onReset }) {
 
   if (songData.status === 'completed') {
     return (
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center">
-        <div className="mb-6">
-          <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(8px)',
+        borderRadius: '0.5rem',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ fontSize: '3.75rem', marginBottom: '1rem' }}>🎉</div>
+          <h2 style={{
+            fontSize: '1.875rem',
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: '1rem'
+          }}>
             Your Song is Ready!
           </h2>
-          <p className="text-blue-200 text-lg mb-6">
+          <p style={{
+            color: '#bfdbfe',
+            fontSize: '1.125rem',
+            marginBottom: '1.5rem'
+          }}>
             Your personalized song has been created successfully
           </p>
         </div>
 
         {/* Song Details */}
-        <div className="bg-white/10 rounded-lg p-6 mb-8 text-left">
-          <h3 className="text-xl font-semibold text-white mb-4">Song Details</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-blue-200">
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '0.5rem',
+          padding: '1.5rem',
+          marginBottom: '2rem',
+          textAlign: 'left'
+        }}>
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            color: 'white',
+            marginBottom: '1rem'
+          }}>Song Details</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1rem',
+            color: '#bfdbfe'
+          }}>
             <div>
               <p><strong>Occasion:</strong> {songData.occasion}</p>
               <p><strong>For:</strong> {songData.recipientNames}</p>
@@ -140,29 +266,60 @@ export function SongStatus({ songId, onReset }) {
         </div>
 
         {songData.audioUrl && (
-          <div className="mb-8">
-            <audio controls className="w-full max-w-md mx-auto">
+          <div style={{ marginBottom: '2rem' }}>
+            <audio controls style={{
+              width: '100%',
+              maxWidth: '28rem',
+              margin: '0 auto'
+            }}>
               <source src={songData.audioUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
             </audio>
           </div>
         )}
 
-        <div className="space-y-4 mb-8">
-          <div className="bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-            <p className="text-green-200 font-medium">
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          marginBottom: '2rem'
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+            border: '1px solid rgba(34, 197, 94, 0.5)',
+            borderRadius: '0.5rem',
+            padding: '1rem'
+          }}>
+            <p style={{
+              color: '#bbf7d0',
+              fontWeight: '500'
+            }}>
               ✅ Song ID: {songId}
             </p>
           </div>
-          <p className="text-blue-200">
+          <p style={{ color: '#bfdbfe' }}>
             You can now download and share your personalized song!
           </p>
         </div>
 
-        <div className="flex space-x-4 justify-center">
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
           <button
             onClick={onReset}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
+            style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              color: 'white',
+              fontWeight: 'bold',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
           >
             Create Another Song
           </button>
@@ -170,7 +327,15 @@ export function SongStatus({ songId, onReset }) {
             <a
               href={songData.audioUrl}
               download
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
+              style={{
+                backgroundColor: '#059669',
+                color: 'white',
+                fontWeight: 'bold',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                textDecoration: 'none',
+                transition: 'all 0.2s'
+              }}
             >
               Download Song
             </a>
@@ -181,20 +346,44 @@ export function SongStatus({ songId, onReset }) {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center">
-      <div className="mb-6">
-        <div className="text-6xl mb-4">❌</div>
-        <h2 className="text-3xl font-bold text-white mb-4">
+    <div style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(8px)',
+      borderRadius: '0.5rem',
+      padding: '2rem',
+      textAlign: 'center'
+    }}>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ fontSize: '3.75rem', marginBottom: '1rem' }}>❌</div>
+        <h2 style={{
+          fontSize: '1.875rem',
+          fontWeight: 'bold',
+          color: 'white',
+          marginBottom: '1rem'
+        }}>
           Something Went Wrong
         </h2>
-        <p className="text-blue-200 text-lg mb-6">
+        <p style={{
+          color: '#bfdbfe',
+          fontSize: '1.125rem',
+          marginBottom: '1.5rem'
+        }}>
           We encountered an issue while creating your song
         </p>
       </div>
 
       <button
         onClick={onReset}
-        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
+        style={{
+          background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '0.5rem',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'all 0.2s'
+        }}
       >
         Try Again
       </button>

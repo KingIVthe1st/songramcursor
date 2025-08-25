@@ -105,22 +105,49 @@ export function SongForm({ onSongCreated }) {
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8">
-      <h2 className="text-3xl font-bold text-white mb-8 text-center">
+    <div style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(8px)',
+      borderRadius: '0.5rem',
+      padding: '2rem',
+      border: '1px solid rgba(255, 255, 255, 0.2)'
+    }}>
+      <h2 style={{
+        fontSize: '1.875rem',
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: '2rem',
+        textAlign: 'center'
+      }}>
         Create Your Personalized Song
       </h2>
       
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {/* Occasion */}
         <div>
-          <label className="block text-white font-medium mb-3 text-lg">
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '500',
+            marginBottom: '0.75rem',
+            fontSize: '1.125rem'
+          }}>
             What's the occasion?
           </label>
           <select
             name="occasion"
             value={formData.occasion}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'white',
+              outline: 'none',
+              fontSize: '1.125rem'
+            }}
             required
           >
             <option value="">Choose your celebration</option>
@@ -131,9 +158,19 @@ export function SongForm({ onSongCreated }) {
         </div>
 
         {/* Recipient and Relationship */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '1.5rem'
+        }}>
           <div>
-            <label className="block text-white font-medium mb-3 text-lg">
+            <label style={{
+              display: 'block',
+              color: 'white',
+              fontWeight: '500',
+              marginBottom: '0.75rem',
+              fontSize: '1.125rem'
+            }}>
               Who's this for?
             </label>
             <input
@@ -142,20 +179,44 @@ export function SongForm({ onSongCreated }) {
               value={formData.recipientNames}
               onChange={handleInputChange}
               placeholder="Sarah, Mom, John, Alex..."
-              className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                outline: 'none',
+                fontSize: '1.125rem'
+              }}
               required
             />
           </div>
 
           <div>
-            <label className="block text-white font-medium mb-3 text-lg">
+            <label style={{
+              display: 'block',
+              color: 'white',
+              fontWeight: '500',
+              marginBottom: '0.75rem',
+              fontSize: '1.125rem'
+            }}>
               Your relationship
             </label>
             <select
               name="relationship"
               value={formData.relationship}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                outline: 'none',
+                fontSize: '1.125rem'
+              }}
               required
             >
               <option value="">wife, friend, daughter, partner...</option>
@@ -168,15 +229,31 @@ export function SongForm({ onSongCreated }) {
 
         {/* Music Style */}
         <div>
-          <label className="block text-white font-medium mb-3 text-lg">
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '500',
+            marginBottom: '0.75rem',
+            fontSize: '1.125rem'
+          }}>
             Music style
           </label>
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <select
               name="musicStyle"
               value={formData.musicStyle}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg pr-12"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                paddingRight: '3rem',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                outline: 'none',
+                fontSize: '1.125rem'
+              }}
               required
             >
               <option value="">Select music style</option>
@@ -184,7 +261,13 @@ export function SongForm({ onSongCreated }) {
                 <option key={style} value={style}>{style}</option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white">
+            <div style={{
+              position: 'absolute',
+              right: '1rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'white'
+            }}>
               🎤
             </div>
           </div>
@@ -192,14 +275,29 @@ export function SongForm({ onSongCreated }) {
 
         {/* Voice Style */}
         <div>
-          <label className="block text-white font-medium mb-3 text-lg">
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '500',
+            marginBottom: '0.75rem',
+            fontSize: '1.125rem'
+          }}>
             Choose Your Voice Style
           </label>
           <select
             name="voiceStyle"
             value={formData.voiceStyle}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'white',
+              outline: 'none',
+              fontSize: '1.125rem'
+            }}
             required
           >
             <option value="">Select a voice style...</option>
@@ -209,15 +307,21 @@ export function SongForm({ onSongCreated }) {
               </option>
             ))}
           </select>
-          <p className="text-blue-200 mt-2">{voices.length} voices available</p>
+          <p style={{ color: '#bfdbfe', marginTop: '0.5rem' }}>{voices.length} voices available</p>
         </div>
 
         {/* Story */}
         <div>
-          <label className="block text-white font-medium mb-3 text-lg">
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '500',
+            marginBottom: '0.75rem',
+            fontSize: '1.125rem'
+          }}>
             Share your story
           </label>
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <textarea
               name="story"
               value={formData.story}
@@ -225,25 +329,58 @@ export function SongForm({ onSongCreated }) {
               placeholder="Tell us about this special moment, person, or memory that means so much to you. The more heartfelt details you share, the more personalized your song will be..."
               rows={6}
               maxLength={500}
-              className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-lg"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                outline: 'none',
+                fontSize: '1.125rem',
+                resize: 'none'
+              }}
               required
             />
-            <div className="absolute top-3 right-3 text-blue-200 text-sm">
+            <div style={{
+              position: 'absolute',
+              top: '0.75rem',
+              right: '0.75rem',
+              color: '#bfdbfe',
+              fontSize: '0.875rem'
+            }}>
               {formData.story.length}/500
             </div>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4">
-            <p className="text-red-200">{error}</p>
+          <div style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+            border: '1px solid rgba(239, 68, 68, 0.5)',
+            borderRadius: '0.5rem',
+            padding: '1rem'
+          }}>
+            <p style={{ color: '#fecaca' }}>{error}</p>
           </div>
         )}
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 text-xl"
+          style={{
+            width: '100%',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+            padding: '1rem 1.5rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontSize: '1.25rem',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading ? 0.5 : 1,
+            transition: 'all 0.2s'
+          }}
         >
           {isLoading ? 'Creating Your Song...' : '🎵 Generate My Song'}
         </button>

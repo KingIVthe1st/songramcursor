@@ -8,20 +8,38 @@ export default function Home() {
   const [currentSongId, setCurrentSongId] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <div className="container mx-auto px-4 py-8">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #8b5cf6 100%)',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '2rem 1rem'
+      }}>
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h1 style={{
+            fontSize: '3rem',
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: '1rem'
+          }}>
             🎵 Music Moments
           </h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p style={{
+            fontSize: '1.25rem',
+            color: '#bfdbfe',
+            maxWidth: '42rem',
+            margin: '0 auto'
+          }}>
             Create personalized songs for your special moments using AI-powered voice generation
           </p>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
+        <div style={{ maxWidth: '64rem', margin: '0 auto' }}>
           {!currentSongId ? (
             <SongForm onSongCreated={setCurrentSongId} />
           ) : (
@@ -30,21 +48,46 @@ export default function Home() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-20 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-            <div className="text-4xl mb-4">🎭</div>
-            <h3 className="text-xl font-semibold text-white mb-2">Personalized Stories</h3>
-            <p className="text-blue-200">Transform your memories into meaningful lyrics</p>
+        <div style={{
+          marginTop: '5rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          maxWidth: '72rem',
+          margin: '5rem auto 0'
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '0.5rem',
+            padding: '1.5rem',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎭</div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'white', marginBottom: '0.5rem' }}>Personalized Stories</h3>
+            <p style={{ color: '#bfdbfe' }}>Transform your memories into meaningful lyrics</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-            <div className="text-4xl mb-4">🎤</div>
-            <h3 className="text-xl font-semibold text-white mb-2">AI Voice Generation</h3>
-            <p className="text-blue-200">Powered by ElevenLabs for natural-sounding vocals</p>
+          <div style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '0.5rem',
+            padding: '1.5rem',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎤</div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'white', marginBottom: '0.5rem' }}>AI Voice Generation</h3>
+            <p style={{ color: '#bfdbfe' }}>Powered by ElevenLabs for natural-sounding vocals</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
-            <div className="text-4xl mb-4">💝</div>
-            <h3 className="text-xl font-semibold text-white mb-2">Perfect Gifts</h3>
-            <p className="text-blue-200">Create unforgettable moments for loved ones</p>
+          <div style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '0.5rem',
+            padding: '1.5rem',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>💝</div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'white', marginBottom: '0.5rem' }}>Perfect Gifts</h3>
+            <p style={{ color: '#bfdbfe' }}>Create unforgettable moments for loved ones</p>
           </div>
         </div>
       </div>
