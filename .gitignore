@@ -52,3 +52,6 @@ temp/
 # Debug files
 debug-*.js
 debug-*.html
+
+# Demo files
+public/demo-song.mp3

@@ -1,0 +1,25 @@
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Music Moments - Personalized AI Song Generation',
+  description: 'Create personalized songs for your special moments using AI-powered voice generation. Transform your memories into meaningful music.',
+  keywords: 'AI music, personalized songs, voice generation, ElevenLabs, music creation',
+  authors: [{ name: 'Music Moments Team' }],
+  viewport: 'width=device-width, initial-scale=1',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  );
+}
