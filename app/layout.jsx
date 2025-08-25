@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Songgram - Personalized AI Song Generation',
   description: 'Create personalized songs for your special moments using AI-powered voice generation. Transform your memories into meaningful music.',
@@ -142,9 +144,14 @@ export default function RootLayout({ children }) {
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             animation: premiumShine 2s infinite;
           }
+
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
         `}</style>
       </head>
-      <body>
+      <body className="font-sans">
         {children}
       </body>
     </html>

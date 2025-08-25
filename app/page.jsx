@@ -1,117 +1,40 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import { SongForm } from './components/SongForm';
 import { SongStatus } from './components/SongStatus';
 import ErrorBoundary from './components/ErrorBoundary';
 
 export default function Home() {
   const [currentSongId, setCurrentSongId] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Stabilize the mouse position handler with useCallback
-  const handleMouseMove = useCallback((e) => {
-    // Add bounds checking to prevent extreme values
-    const x = Math.max(0, Math.min(e.clientX, window.innerWidth));
-    const y = Math.max(0, Math.min(e.clientY, window.innerHeight));
-    
-    // Only update if position actually changed (prevents unnecessary re-renders)
-    setMousePosition(prev => {
-      if (Math.abs(prev.x - x) > 5 || Math.abs(prev.y - y) > 5) {
-        return { x, y };
-      }
-      return prev;
-    });
-  }, []);
-
-  // Stabilize the song creation handler
-  const handleSongCreated = useCallback((songId) => {
+  const handleSongCreated = (songId) => {
     if (songId && typeof songId === 'string') {
       setCurrentSongId(songId);
     }
-  }, []);
+  };
 
-  // Stabilize the reset handler
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setCurrentSongId(null);
-  }, []);
-
-  useEffect(() => {
-    // Add error handling and throttling for mouse tracking
-    let isActive = true;
-    
-    const throttledMouseMove = (e) => {
-      if (!isActive) return;
-      
-      // Throttle mouse events to prevent excessive updates
-      requestAnimationFrame(() => {
-        if (isActive) {
-          handleMouseMove(e);
-        }
-      });
-    };
-
-    try {
-      window.addEventListener('mousemove', throttledMouseMove, { passive: true });
-      
-      return () => {
-        isActive = false;
-        window.removeEventListener('mousemove', throttledMouseMove);
-      };
-    } catch (error) {
-      console.error('Error setting up mouse tracking:', error);
-      return () => {
-        isActive = false;
-      };
-    }
-  }, [handleMouseMove]);
-
-  // Memoize the background style to prevent unnecessary re-renders
-  const backgroundStyle = useMemo(() => ({
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%)',
-    backgroundSize: '400% 400%',
-    animation: 'premiumFlow 25s ease infinite',
-    position: 'relative',
-    overflow: 'hidden',
-    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-  }), []);
-
-  // Memoize the container style
-  const containerStyle = useMemo(() => ({
-    maxWidth: '1400px',
-    margin: '0 auto',
-    padding: '2rem 1rem',
-    position: 'relative',
-    zIndex: 1
-  }), []);
-
-  // Memoize the cursor follower style
-  const cursorStyle = useMemo(() => ({
-    position: 'fixed',
-    left: mousePosition.x - 20,
-    top: mousePosition.y - 20,
-    width: '40px',
-    height: '40px',
-    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
-    borderRadius: '50%',
-    pointerEvents: 'none',
-    zIndex: 9999,
-    transition: 'all 0.1s ease-out',
-    filter: 'blur(1px)'
-  }), [mousePosition.x, mousePosition.y]);
+  };
 
   return (
-    <div style={backgroundStyle}>
-      {/* Premium background elements */}
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%)',
+      backgroundSize: '400% 400%',
+      position: 'relative',
+      overflow: 'hidden',
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
+    }}>
+      {/* Background elements */}
       <div style={{
         position: 'absolute',
         top: '0',
         left: '0',
         width: '100%',
         height: '100%',
-        background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-        animation: 'premiumFloat 20s ease-in-out infinite'
+        background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)'
       }}></div>
       <div style={{
         position: 'absolute',
@@ -119,15 +42,17 @@ export default function Home() {
         right: '0',
         width: '100%',
         height: '100%',
-        background: 'radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%)',
-        animation: 'premiumFloat 25s ease-in-out infinite reverse'
+        background: 'radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%)'
       }}></div>
       
-      {/* Interactive cursor follower */}
-      <div style={cursorStyle}></div>
-      
-      <div style={containerStyle}>
-        {/* Premium Header */}
+      <div style={{
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: '2rem 1rem',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        {/* Header */}
         <ErrorBoundary>
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
             <div style={{
@@ -137,22 +62,9 @@ export default function Home() {
               padding: '4rem 3rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               boxShadow: '0 50px 100px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              transform: 'translateY(0)',
-              animation: 'premiumFloat 8s ease-in-out infinite',
               position: 'relative',
               overflow: 'hidden'
             }}>
-              {/* Premium accent lines */}
-              <div style={{
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                width: '100%',
-                height: '1px',
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
-                animation: 'premiumShine 3s ease-in-out infinite'
-              }}></div>
-              
               <h1 style={{
                 fontSize: '5rem',
                 fontWeight: '900',
@@ -193,24 +105,12 @@ export default function Home() {
               borderRadius: '2rem',
               padding: '3rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              cursor: 'pointer',
-              transform: 'translateY(0)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
             }}>
               <div style={{
                 fontSize: '4rem',
                 marginBottom: '2rem',
-                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-                animation: 'premiumFloat 6s ease-in-out infinite'
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
               }}>🎵</div>
               <h3 style={{
                 fontSize: '1.75rem',
@@ -238,24 +138,12 @@ export default function Home() {
               borderRadius: '2rem',
               padding: '3rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              cursor: 'pointer',
-              transform: 'translateY(0)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
             }}>
               <div style={{
                 fontSize: '4rem',
                 marginBottom: '2rem',
-                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-                animation: 'premiumFloat 6s ease-in-out infinite 1s'
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
               }}>🎨</div>
               <h3 style={{
                 fontSize: '1.75rem',
@@ -283,24 +171,12 @@ export default function Home() {
               borderRadius: '2rem',
               padding: '3rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              cursor: 'pointer',
-              transform: 'translateY(0)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
             }}>
               <div style={{
                 fontSize: '4rem',
                 marginBottom: '2rem',
-                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-                animation: 'premiumFloat 6s ease-in-out infinite 2s'
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
               }}>💝</div>
               <h3 style={{
                 fontSize: '1.75rem',
