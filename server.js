@@ -11,13 +11,27 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+// Debug logging
+console.log('🚀 Starting SongGram server...');
+console.log('🔑 API Key present:', !!process.env.ELEVENLABS_API_KEY);
+console.log('🌐 Port:', PORT);
+
 // ElevenLabs Music API endpoint
 app.post('/api/generate-music', async (req, res) => {
   try {
+    console.log('📝 Received request:', req.body);
+    
     const { occasion, recipient, relationship, musicStyle, voiceStyle } = req.body;
     
     if (!occasion || !recipient || !relationship || !musicStyle) {
+      console.log('❌ Missing required fields');
       return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Check if API key is available
+    if (!process.env.ELEVENLABS_API_KEY) {
+      console.log('❌ No API key found in environment');
+      return res.status(500).json({ error: 'ElevenLabs API key not configured' });
     }
 
     // Create a music generation prompt based on the form inputs
@@ -29,6 +43,7 @@ app.post('/api/generate-music', async (req, res) => {
 
     console.log('🎵 Calling ElevenLabs Music API...');
     console.log('🎼 Music generation prompt:', musicPrompt);
+    console.log('🔑 Using API key:', process.env.ELEVENLABS_API_KEY.substring(0, 10) + '...');
 
     // Call ElevenLabs Music API
     const elevenLabsResponse = await fetch('https://api.elevenlabs.io/v1/music/generate', {
@@ -48,6 +63,8 @@ app.post('/api/generate-music', async (req, res) => {
         classifier_free_guidance: 3.0
       })
     });
+
+    console.log('📡 ElevenLabs response status:', elevenLabsResponse.status);
 
     if (!elevenLabsResponse.ok) {
       const errorData = await elevenLabsResponse.text();
@@ -103,4 +120,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🎵 SongGram server running on port ${PORT}`);
   console.log(`🌐 Open http://localhost:${PORT} in your browser`);
+  console.log(`🔑 API Key configured: ${!!process.env.ELEVENLABS_API_KEY}`);
 });
