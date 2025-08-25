@@ -6,6 +6,8 @@ export function SongStatus({ songId, onReset }) {
   const [status, setStatus] = useState('processing');
   const [songData, setSongData] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(120); // 2 minutes default
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -18,6 +20,7 @@ export function SongStatus({ songId, onReset }) {
           
           if (data.status === 'completed') {
             setProgress(100);
+            setEstimatedTimeRemaining(0);
           }
         }
       } catch (error) {
@@ -25,23 +28,52 @@ export function SongStatus({ songId, onReset }) {
       }
     };
 
-    const interval = setInterval(checkStatus, 2000);
+    // Check status every 5 seconds instead of 2 seconds for real API calls
+    const interval = setInterval(checkStatus, 5000);
     checkStatus();
 
     return () => clearInterval(interval);
   }, [songId]);
 
   useEffect(() => {
+    // Track time elapsed
+    const timeTimer = setInterval(() => {
+      setTimeElapsed(prev => prev + 1);
+    }, 1000);
+
+    // Update progress based on time elapsed for real song generation
     if (status === 'processing') {
-      const timer = setInterval(() => {
+      const progressTimer = setInterval(() => {
         setProgress(prev => {
-          if (prev >= 90) return prev;
-          return prev + Math.random() * 15;
+          // More realistic progress for actual song generation
+          // Songs typically take 2-5 minutes to generate
+          if (prev >= 95) return prev;
+          
+          // Slower progress at the beginning, faster in the middle
+          if (prev < 30) return prev + Math.random() * 3; // 0-3% per interval
+          if (prev < 70) return prev + Math.random() * 5; // 0-5% per interval
+          return prev + Math.random() * 2; // 0-2% per interval near completion
         });
-      }, 2000);
-      return () => clearInterval(timer);
+      }, 3000); // Check every 3 seconds for more realistic progress
+
+      return () => {
+        clearInterval(progressTimer);
+        clearInterval(timeTimer);
+      };
     }
+
+    return () => clearInterval(timeTimer);
   }, [status]);
+
+  // Calculate estimated time remaining based on progress and time elapsed
+  useEffect(() => {
+    if (progress > 0 && timeElapsed > 0) {
+      const progressRate = progress / timeElapsed;
+      const remainingProgress = 100 - progress;
+      const estimatedSeconds = remainingProgress / progressRate;
+      setEstimatedTimeRemaining(Math.max(0, Math.ceil(estimatedSeconds)));
+    }
+  }, [progress, timeElapsed]);
 
   if (status === 'completed') {
     return (
@@ -117,7 +149,7 @@ export function SongStatus({ songId, onReset }) {
             letterSpacing: '0.01em',
             lineHeight: '1.6'
           }}>
-            Your personalized song has been generated successfully
+            Your personalized song has been generated successfully with ElevenLabs AI
           </p>
         </div>
 
@@ -215,16 +247,42 @@ export function SongStatus({ songId, onReset }) {
           textAlign: 'center',
           marginBottom: '3rem'
         }}>
-          <audio
-            controls
-            style={{
-              maxWidth: '40rem',
-              width: '100%',
+          {songData?.audioUrl ? (
+            <audio
+              controls
+              style={{
+                maxWidth: '40rem',
+                width: '100%',
+                borderRadius: '1.5rem',
+                filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3))'
+              }}
+              src={songData.audioUrl}
+            />
+          ) : (
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
               borderRadius: '1.5rem',
-              filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3))'
-            }}
-            src={songData?.audioUrl || '/demo-song.mp3'}
-          />
+              padding: '2rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(20px)',
+              maxWidth: '40rem',
+              margin: '0 auto'
+            }}>
+              <div style={{
+                fontSize: '3rem',
+                marginBottom: '1rem',
+                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+              }}>🎵</div>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '1.125rem',
+                fontWeight: '500',
+                margin: '0'
+              }}>
+                Your personalized song is ready! Audio will be available shortly.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -266,34 +324,51 @@ export function SongStatus({ songId, onReset }) {
           </button>
           
           <button
-            onClick={() => window.open(songData?.audioUrl || '/demo-song.mp3', '_blank')}
+            onClick={() => {
+              if (songData?.audioUrl) {
+                window.open(songData.audioUrl, '_blank');
+              } else {
+                // Show a message that the song is still being generated
+                alert('Your song is still being generated. Please wait a moment and try again.');
+              }
+            }}
+            disabled={!songData?.audioUrl}
             style={{
-              background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 25%, #86efac 50%, #bbf7d0 75%, #dcfce7 100%)',
+              background: songData?.audioUrl 
+                ? 'linear-gradient(135deg, #22c55e 0%, #4ade80 25%, #86efac 50%, #bbf7d0 75%, #dcfce7 100%)'
+                : 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
               backgroundSize: '200% 200%',
-              animation: 'premiumFlow 4s ease infinite',
+              animation: songData?.audioUrl ? 'premiumFlow 4s ease infinite' : 'none',
               color: 'white',
               fontWeight: '800',
               padding: '1.25rem 2.5rem',
               borderRadius: '2rem',
               border: 'none',
               fontSize: '1.25rem',
-              cursor: 'pointer',
+              cursor: songData?.audioUrl ? 'pointer' : 'not-allowed',
               transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 25px 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              boxShadow: songData?.audioUrl 
+                ? '0 25px 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                : '0 10px 20px rgba(0, 0, 0, 0.2)',
               transform: 'translateY(0)',
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '0.02em'
+              letterSpacing: '0.02em',
+              opacity: songData?.audioUrl ? 1 : 0.6
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-4px) scale(1.02)';
-              e.target.style.boxShadow = '0 35px 70px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+              if (songData?.audioUrl) {
+                e.target.style.transform = 'translateY(-4px) scale(1.02)';
+                e.target.style.boxShadow = '0 35px 70px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 25px 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+              if (songData?.audioUrl) {
+                e.target.style.transform = 'translateY(0) scale(1)';
+                e.target.style.boxShadow = '0 25px 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+              }
             }}
           >
-            💾 Download Song
+            {songData?.audioUrl ? '💾 Download Song' : '⏳ Song Generating...'}
           </button>
         </div>
       </div>
@@ -376,7 +451,7 @@ export function SongStatus({ songId, onReset }) {
           letterSpacing: '0.01em',
           lineHeight: '1.6'
         }}>
-          Our AI is crafting something special just for you
+          Our AI is crafting something special just for you using ElevenLabs
         </p>
       </div>
 
@@ -400,6 +475,89 @@ export function SongStatus({ songId, onReset }) {
           transition: 'width 1s ease-out',
           boxShadow: '0 0 20px rgba(129, 140, 248, 0.3)'
         }}></div>
+      </div>
+
+      {/* Time and Progress Info */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '2rem',
+        marginBottom: '3rem'
+      }}>
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+          padding: '1.5rem',
+          borderRadius: '1rem',
+          textAlign: 'center',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)'
+        }}>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>Time Elapsed</p>
+          <p style={{
+            color: 'white',
+            fontSize: '1.5rem',
+            fontWeight: '700'
+          }}>
+            {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}
+          </p>
+        </div>
+        
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+          padding: '1.5rem',
+          borderRadius: '1rem',
+          textAlign: 'center',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)'
+        }}>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>Progress</p>
+          <p style={{
+            color: 'white',
+            fontSize: '1.5rem',
+            fontWeight: '700'
+          }}>
+            {Math.round(progress)}%
+          </p>
+        </div>
+        
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+          padding: '1.5rem',
+          borderRadius: '1rem',
+          textAlign: 'center',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)'
+        }}>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>ETA</p>
+          <p style={{
+            color: 'white',
+            fontSize: '1.5rem',
+            fontWeight: '700'
+          }}>
+            {Math.floor(estimatedTimeRemaining / 60)}:{(estimatedTimeRemaining % 60).toString().padStart(2, '0')}
+          </p>
+        </div>
       </div>
 
       {/* Status Steps */}
@@ -497,14 +655,24 @@ export function SongStatus({ songId, onReset }) {
         </div>
       </div>
 
-      {/* Estimated Time */}
+      {/* Processing Note */}
       <div style={{
         textAlign: 'center',
-        color: 'rgba(255, 255, 255, 0.8)',
-        fontSize: '1.125rem',
-        fontWeight: '500'
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontSize: '1rem',
+        fontWeight: '500',
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+        padding: '1.5rem',
+        borderRadius: '1rem',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(20px)'
       }}>
-        Estimated time remaining: {Math.max(0, Math.ceil((100 - progress) / 10))} minutes
+        <p style={{ margin: '0 0 0.5rem 0' }}>
+          <strong>Note:</strong> Real song generation with ElevenLabs typically takes 2-5 minutes.
+        </p>
+        <p style={{ margin: '0', fontSize: '0.875rem' }}>
+          We're creating a unique, personalized song just for you using advanced AI technology.
+        </p>
       </div>
     </div>
   );

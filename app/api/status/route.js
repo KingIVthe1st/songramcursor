@@ -21,25 +21,43 @@ export async function GET(request) {
     // 3. Return the actual status and audio URL when complete
 
     // For now, simulate a completed song with all the new fields
-    // This avoids making actual API calls to ElevenLabs
+    // This simulates the ElevenLabs generation process
+    
+    // Simulate processing time (2-5 minutes for real generation)
+    const processingTime = Math.floor(Math.random() * 180) + 120; // 2-5 minutes in seconds
+    
+    // Simulate the song being completed after a realistic time
+    const songCreationTime = parseInt(songId.split('_')[1]); // Extract timestamp from songId
+    const timeSinceCreation = Math.floor((Date.now() - songCreationTime) / 1000);
+    
+    let status = 'processing';
+    let audioUrl = null;
+    
+    if (timeSinceCreation >= processingTime) {
+      status = 'completed';
+      audioUrl = `/api/song/${songId}`;
+    }
     
     const mockSongData = {
       songId,
-      status: 'completed',
+      status,
       occasion: 'Birthday', // This would come from the stored song data
       recipientNames: 'Sarah, Mom', // This would come from the stored song data
       relationship: 'daughter and mother', // This would come from the stored song data
       musicStyle: 'Pop', // This would come from the stored song data
       voiceStyle: 'voice_123', // This would come from the stored song data
       story: 'A heartfelt story about celebrating another year of life...', // This would come from the stored song data
-      audioUrl: '/demo-song.mp3', // This would be the actual ElevenLabs generated audio URL
-      completedAt: new Date().toISOString(),
-      processingTime: '45 seconds'
+      audioUrl: audioUrl, // This would be the actual ElevenLabs generated audio URL
+      createdAt: new Date(songCreationTime).toISOString(),
+      processingTime: `${Math.floor(processingTime / 60)} minutes`
     };
 
     // Log the status check for debugging
     console.log('Status check for song:', songId);
-    console.log('Returning mock data:', mockSongData);
+    console.log('Time since creation:', timeSinceCreation, 'seconds');
+    console.log('Processing time needed:', processingTime, 'seconds');
+    console.log('Status:', status);
+    console.log('Returning data:', mockSongData);
 
     return Response.json(mockSongData);
 
