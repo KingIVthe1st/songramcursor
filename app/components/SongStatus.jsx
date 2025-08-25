@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ErrorBoundary from './ErrorBoundary';
 
-export function SongStatus({ songId, onReset }) {
+function SongStatusComponent({ songId, onReset }) {
   const [status, setStatus] = useState('processing');
   const [songData, setSongData] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -677,5 +678,14 @@ export function SongStatus({ songId, onReset }) {
         </p>
       </div>
     </div>
+  );
+}
+
+// Export with Error Boundary wrapper
+export function SongStatus(props) {
+  return (
+    <ErrorBoundary>
+      <SongStatusComponent {...props} />
+    </ErrorBoundary>
   );
 }

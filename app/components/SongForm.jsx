@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ErrorBoundary from './ErrorBoundary';
 
-export function SongForm({ onSongCreated }) {
+function SongFormComponent({ onSongCreated }) {
   const [formData, setFormData] = useState({
     occasion: '',
     recipientNames: '',
@@ -185,23 +186,22 @@ export function SongForm({ onSongCreated }) {
       }}>
         Create Your Personalized Song
       </h2>
-      
-      <form onSubmit={handleSubmit} style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '3rem', 
-        position: 'relative', 
-        zIndex: 1 
+
+      <form onSubmit={handleSubmit} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2rem',
+        animation: 'premiumSlideIn 1s ease-out 0.2s both'
       }}>
-        {/* Occasion */}
-        <div style={{ animation: 'premiumSlideIn 0.8s ease-out 0.1s both' }}>
+        {/* Occasion Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.3s both' }}>
           <label style={{
             display: 'block',
             color: 'white',
             fontWeight: '700',
-            marginBottom: '1.25rem',
             fontSize: '1.375rem',
-            textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
             letterSpacing: '0.01em'
           }}>
             What's the occasion?
@@ -212,27 +212,27 @@ export function SongForm({ onSongCreated }) {
             onChange={handleInputChange}
             onFocus={() => handleFieldFocus('occasion')}
             onBlur={handleFieldBlur}
+            required
             style={{
               width: '100%',
               padding: '1.25rem 1.5rem',
               borderRadius: '1.5rem',
               background: focusedField === 'occasion' 
-                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
               border: focusedField === 'occasion' 
                 ? '2px solid rgba(129, 140, 248, 0.6)' 
-                : '1px solid rgba(255, 255, 255, 0.15)',
+                : '1px solid rgba(255, 255, 255, 0.1)',
               color: 'white',
-              outline: 'none',
               fontSize: '1.25rem',
               backdropFilter: 'blur(20px)',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: focusedField === 'occasion' 
-                ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              transform: focusedField === 'occasion' ? 'scale(1.02)' : 'scale(1)'
+              boxShadow: focusedField === 'occasion'
+                ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transform: focusedField === 'occasion' ? 'scale(1.02)' : 'scale(1)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer'
             }}
-            required
           >
             <option value="">Choose your celebration</option>
             {occasions.map((occasion) => (
@@ -241,111 +241,103 @@ export function SongForm({ onSongCreated }) {
           </select>
         </div>
 
-        {/* Recipient and Relationship */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2.5rem',
-          animation: 'premiumSlideIn 0.8s ease-out 0.2s both'
-        }}>
-          <div>
-            <label style={{
-              display: 'block',
-              color: 'white',
-              fontWeight: '700',
-              marginBottom: '1.25rem',
-              fontSize: '1.375rem',
-              textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '0.01em'
-            }}>
-              Who's this for?
-            </label>
-            <input
-              type="text"
-              name="recipientNames"
-              value={formData.recipientNames}
-              onChange={handleInputChange}
-              onFocus={() => handleFieldFocus('recipientNames')}
-              onBlur={handleFieldBlur}
-              placeholder="Sarah, Mom, John, Alex..."
-              style={{
-                width: '100%',
-                padding: '1.25rem 1.5rem',
-                borderRadius: '1.5rem',
-                background: focusedField === 'recipientNames' 
-                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                border: focusedField === 'recipientNames' 
-                  ? '2px solid rgba(129, 140, 248, 0.6)' 
-                  : '1px solid rgba(255, 255, 255, 0.15)',
-                color: 'white',
-                outline: 'none',
-                fontSize: '1.25rem',
-                backdropFilter: 'blur(20px)',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: focusedField === 'recipientNames' 
-                  ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                  : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                transform: focusedField === 'recipientNames' ? 'scale(1.02)' : 'scale(1)'
-              }}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{
-              display: 'block',
-              color: 'white',
-              fontWeight: '700',
-              marginBottom: '1.25rem',
-              fontSize: '1.375rem',
-              textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '0.01em'
-            }}>
-              Your relationship
-            </label>
-            <input
-              type="text"
-              name="relationship"
-              value={formData.relationship}
-              onChange={handleInputChange}
-              onFocus={() => handleFieldFocus('relationship')}
-              onBlur={handleFieldBlur}
-              placeholder="wife, friend, daughter, partner..."
-              style={{
-                width: '100%',
-                padding: '1.25rem 1.5rem',
-                borderRadius: '1.5rem',
-                background: focusedField === 'relationship' 
-                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                border: focusedField === 'relationship' 
-                  ? '2px solid rgba(129, 140, 248, 0.6)' 
-                  : '1px solid rgba(255, 255, 255, 0.15)',
-                color: 'white',
-                outline: 'none',
-                fontSize: '1.25rem',
-                backdropFilter: 'blur(20px)',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: focusedField === 'relationship' 
-                  ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                  : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                transform: focusedField === 'relationship' ? 'scale(1.02)' : 'scale(1)'
-              }}
-              required
-            />
-          </div>
-        </div>
-
-        {/* Music Style */}
-        <div style={{ animation: 'premiumSlideIn 0.8s ease-out 0.3s both' }}>
+        {/* Recipient Names Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.4s both' }}>
           <label style={{
             display: 'block',
             color: 'white',
             fontWeight: '700',
-            marginBottom: '1.25rem',
             fontSize: '1.375rem',
-            textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+            letterSpacing: '0.01em'
+          }}>
+            Who is this song for?
+          </label>
+          <input
+            type="text"
+            name="recipientNames"
+            value={formData.recipientNames}
+            onChange={handleInputChange}
+            onFocus={() => handleFieldFocus('recipientNames')}
+            onBlur={handleFieldBlur}
+            placeholder="e.g., Sarah, Mom, Dad, Best Friend"
+            required
+            style={{
+              width: '100%',
+              padding: '1.25rem 1.5rem',
+              borderRadius: '1.5rem',
+              background: focusedField === 'recipientNames' 
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+              border: focusedField === 'recipientNames' 
+                ? '2px solid rgba(129, 140, 248, 0.6)' 
+                : '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              fontSize: '1.25rem',
+              backdropFilter: 'blur(20px)',
+              boxShadow: focusedField === 'recipientNames'
+                ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transform: focusedField === 'recipientNames' ? 'scale(1.02)' : 'scale(1)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+          />
+        </div>
+
+        {/* Relationship Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.5s both' }}>
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '700',
+            fontSize: '1.375rem',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+            letterSpacing: '0.01em'
+          }}>
+            What's your relationship?
+          </label>
+          <input
+            type="text"
+            name="relationship"
+            value={formData.relationship}
+            onChange={handleInputChange}
+            onFocus={() => handleFieldFocus('relationship')}
+            onBlur={handleFieldBlur}
+            placeholder="wife, friend, daughter, partner..."
+            required
+            style={{
+              width: '100%',
+              padding: '1.25rem 1.5rem',
+              borderRadius: '1.5rem',
+              background: focusedField === 'relationship' 
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+              border: focusedField === 'relationship' 
+                ? '2px solid rgba(129, 140, 248, 0.6)' 
+                : '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              fontSize: '1.25rem',
+              backdropFilter: 'blur(20px)',
+              boxShadow: focusedField === 'relationship'
+                ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transform: focusedField === 'relationship' ? 'scale(1.02)' : 'scale(1)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+          />
+        </div>
+
+        {/* Music Style Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.6s both' }}>
+          <label style={{
+            display: 'block',
+            color: 'white',
+            fontWeight: '700',
+            fontSize: '1.375rem',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
             letterSpacing: '0.01em'
           }}>
             Music style
@@ -357,30 +349,30 @@ export function SongForm({ onSongCreated }) {
               onChange={handleInputChange}
               onFocus={() => handleFieldFocus('musicStyle')}
               onBlur={handleFieldBlur}
+              required
               style={{
                 width: '100%',
                 padding: '1.25rem 1.5rem',
-                paddingRight: '4.5rem',
+                paddingRight: '4rem',
                 borderRadius: '1.5rem',
                 background: focusedField === 'musicStyle' 
-                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
                 border: focusedField === 'musicStyle' 
                   ? '2px solid rgba(129, 140, 248, 0.6)' 
-                  : '1px solid rgba(255, 255, 255, 0.15)',
+                  : '1px solid rgba(255, 255, 255, 0.1)',
                 color: 'white',
-                outline: 'none',
                 fontSize: '1.25rem',
                 backdropFilter: 'blur(20px)',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: focusedField === 'musicStyle' 
-                  ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                  : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                transform: focusedField === 'musicStyle' ? 'scale(1.02)' : 'scale(1)'
+                boxShadow: focusedField === 'musicStyle'
+                  ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                transform: focusedField === 'musicStyle' ? 'scale(1.02)' : 'scale(1)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer'
               }}
-              required
             >
-              <option value="">Select music style</option>
+              <option value="">Choose your music style</option>
               {musicStyles.map((style) => (
                 <option key={style} value={style}>{style}</option>
               ))}
@@ -390,25 +382,22 @@ export function SongForm({ onSongCreated }) {
               right: '1.5rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: 'white',
-              fontSize: '1.75rem',
-              filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+              fontSize: '1.5rem',
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
               animation: 'premiumFloat 4s ease-in-out infinite'
-            }}>
-              🎤
-            </div>
+            }}>🎵</div>
           </div>
         </div>
 
-        {/* Voice Style */}
-        <div style={{ animation: 'premiumSlideIn 0.8s ease-out 0.4s both' }}>
+        {/* Voice Style Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.7s both' }}>
           <label style={{
             display: 'block',
             color: 'white',
             fontWeight: '700',
-            marginBottom: '1.25rem',
             fontSize: '1.375rem',
-            textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
             letterSpacing: '0.01em'
           }}>
             Choose Your Voice Style
@@ -419,53 +408,54 @@ export function SongForm({ onSongCreated }) {
             onChange={handleInputChange}
             onFocus={() => handleFieldFocus('voiceStyle')}
             onBlur={handleFieldBlur}
+            required
             style={{
               width: '100%',
               padding: '1.25rem 1.5rem',
               borderRadius: '1.5rem',
               background: focusedField === 'voiceStyle' 
-                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
               border: focusedField === 'voiceStyle' 
                 ? '2px solid rgba(129, 140, 248, 0.6)' 
-                : '1px solid rgba(255, 255, 255, 0.15)',
+                : '1px solid rgba(255, 255, 255, 0.1)',
               color: 'white',
-              outline: 'none',
               fontSize: '1.25rem',
               backdropFilter: 'blur(20px)',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: focusedField === 'voiceStyle' 
-                ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              transform: focusedField === 'voiceStyle' ? 'scale(1.02)' : 'scale(1)'
+              boxShadow: focusedField === 'voiceStyle'
+                ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transform: focusedField === 'voiceStyle' ? 'scale(1.02)' : 'scale(1)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer'
             }}
-            required
           >
-            <option value="">Select a voice style...</option>
+            <option value="">Select a voice</option>
             {voices.map((voice) => (
               <option key={voice.voice_id} value={voice.voice_id}>
-                {voice.name} ({voice.labels?.accent || 'Standard'})
+                {voice.name} ({voice.labels?.accent || 'american'})
               </option>
             ))}
           </select>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.8)', 
-            marginTop: '1rem',
-            fontSize: '1.125rem',
-            fontWeight: '500',
-            textAlign: 'center'
-          }}>{voices.length} voices available</p>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '1rem',
+            marginTop: '0.5rem',
+            fontWeight: '500'
+          }}>
+            {voices.length} voices available
+          </p>
         </div>
 
-        {/* Story */}
-        <div style={{ animation: 'premiumSlideIn 0.8s ease-out 0.5s both' }}>
+        {/* Story Field */}
+        <div style={{ animation: 'premiumSlideIn 1s ease-out 0.8s both' }}>
           <label style={{
             display: 'block',
             color: 'white',
             fontWeight: '700',
-            marginBottom: '1.25rem',
             fontSize: '1.375rem',
-            textShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+            marginBottom: '1rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
             letterSpacing: '0.01em'
           }}>
             Share your story
@@ -478,6 +468,7 @@ export function SongForm({ onSongCreated }) {
               onFocus={() => handleFieldFocus('story')}
               onBlur={handleFieldBlur}
               placeholder="Tell us about this special moment, person, or memory that means so much to you. The more heartfelt details you share, the more personalized your song will be..."
+              required
               rows={6}
               maxLength={500}
               style={{
@@ -485,64 +476,67 @@ export function SongForm({ onSongCreated }) {
                 padding: '1.25rem 1.5rem',
                 borderRadius: '1.5rem',
                 background: focusedField === 'story' 
-                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 100%)'
-                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)'
+                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
                 border: focusedField === 'story' 
                   ? '2px solid rgba(129, 140, 248, 0.6)' 
-                  : '1px solid rgba(255, 255, 255, 0.15)',
+                  : '1px solid rgba(255, 255, 255, 0.1)',
                 color: 'white',
-                outline: 'none',
                 fontSize: '1.25rem',
                 backdropFilter: 'blur(20px)',
-                resize: 'none',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: focusedField === 'story' 
-                  ? '0 20px 40px rgba(129, 140, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-                  : '0 15px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                transform: focusedField === 'story' ? 'scale(1.02)' : 'scale(1)'
+                boxShadow: focusedField === 'story'
+                  ? '0 20px 40px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  : '0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                transform: focusedField === 'story' ? 'scale(1.02)' : 'scale(1)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                resize: 'vertical',
+                fontFamily: 'inherit'
               }}
-              required
             />
             <div style={{
               position: 'absolute',
-              top: '1.25rem',
-              right: '1.25rem',
+              bottom: '1rem',
+              right: '1rem',
+              background: 'rgba(0, 0, 0, 0.3)',
               color: 'rgba(255, 255, 255, 0.7)',
-              fontSize: '1rem',
-              fontWeight: '600',
-              background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 100%)',
-              padding: '0.5rem 1rem',
+              padding: '0.25rem 0.75rem',
               borderRadius: '1rem',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              backdropFilter: 'blur(10px)'
             }}>
               {formData.story.length}/500
             </div>
           </div>
         </div>
 
+        {/* Error Display */}
         {error && (
           <div style={{
-            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.08) 100%)',
+            backdropFilter: 'blur(20px)',
             borderRadius: '1.5rem',
             padding: '1.5rem',
-            backdropFilter: 'blur(20px)',
-            animation: 'premiumSlideIn 0.6s ease-out both'
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#fca5a5',
+            fontSize: '1.125rem',
+            fontWeight: '500',
+            textAlign: 'center',
+            animation: 'premiumSlideIn 0.5s ease-out'
           }}>
-            <p style={{ color: '#fecaca', fontWeight: '600', textAlign: 'center' }}>{error}</p>
+            {error}
           </div>
         )}
 
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={isLoading}
           style={{
-            width: '100%',
             background: isLoading 
               ? 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'
               : 'linear-gradient(135deg, #818cf8 0%, #a5b4fc 25%, #c7d2fe 50%, #e0e7ff 75%, #ffffff 100%)',
-            backgroundSize: isLoading ? '100% 100%' : '200% 200%',
+            backgroundSize: '200% 200%',
             animation: isLoading ? 'none' : 'premiumFlow 4s ease infinite',
             color: 'white',
             fontWeight: '800',
@@ -551,10 +545,9 @@ export function SongForm({ onSongCreated }) {
             border: 'none',
             fontSize: '1.5rem',
             cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.7 : 1,
             transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             boxShadow: isLoading 
-              ? '0 10px 20px rgba(0, 0, 0, 0.2)' 
+              ? '0 10px 20px rgba(0, 0, 0, 0.2)'
               : '0 25px 50px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             transform: 'translateY(0)',
             textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
@@ -571,29 +564,38 @@ export function SongForm({ onSongCreated }) {
           onMouseLeave={(e) => {
             if (!isLoading) {
               e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = isLoading 
-                ? '0 10px 20px rgba(0, 0, 0, 0.2)' 
-                : '0 25px 50px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+              e.target.style.boxShadow = '0 25px 50px rgba(129, 140, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
             }
           }}
         >
           {isLoading ? (
-            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+            <>
               <div style={{
+                display: 'inline-block',
                 width: '1.5rem',
                 height: '1.5rem',
                 border: '2px solid rgba(255, 255, 255, 0.3)',
                 borderTopColor: 'white',
                 borderRadius: '50%',
-                animation: 'premiumRotate 1s linear infinite'
+                animation: 'premiumRotate 1s linear infinite',
+                marginRight: '0.75rem'
               }}></div>
-              Creating Your Song...
-            </span>
+              Generating Your Song...
+            </>
           ) : (
             '🎵 Generate My Song'
           )}
         </button>
       </form>
     </div>
+  );
+}
+
+// Export with Error Boundary wrapper
+export function SongForm(props) {
+  return (
+    <ErrorBoundary>
+      <SongFormComponent {...props} />
+    </ErrorBoundary>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { SongForm } from './components/SongForm';
 import { SongStatus } from './components/SongStatus';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function Home() {
   const [currentSongId, setCurrentSongId] = useState(null);
@@ -79,264 +80,210 @@ export default function Home() {
         zIndex: 1
       }}>
         {/* Premium Header */}
-        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-            backdropFilter: 'blur(40px)',
-            borderRadius: '3rem',
-            padding: '4rem 3rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 50px 100px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            transform: 'translateY(0)',
-            animation: 'premiumFloat 8s ease-in-out infinite',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            {/* Premium accent lines */}
+        <ErrorBoundary>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
             <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: '100%',
-              height: '1px',
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
-              animation: 'premiumShine 3s ease-in-out infinite'
-            }}></div>
-            
-            <h1 style={{
-              fontSize: '5rem',
-              fontWeight: '900',
-              background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              marginBottom: '2rem',
-              textShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-              letterSpacing: '-0.02em',
-              lineHeight: '1.1'
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              backdropFilter: 'blur(40px)',
+              borderRadius: '3rem',
+              padding: '4rem 3rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 50px 100px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              transform: 'translateY(0)',
+              animation: 'premiumFloat 8s ease-in-out infinite',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              🎵 Songgram
-            </h1>
-            <p style={{
-              fontSize: '1.5rem',
-              color: 'rgba(255, 255, 255, 0.9)',
-              maxWidth: '56rem',
-              margin: '0 auto',
-              lineHeight: '1.7',
-              fontWeight: '400',
-              letterSpacing: '0.01em'
-            }}>
-              Create personalized songs for your special moments using AI-powered voice generation
-            </p>
-            
-            {/* Premium decorative elements */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '2rem',
-              marginTop: '3rem'
-            }}>
+              {/* Premium accent lines */}
               <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: '#818cf8',
-                borderRadius: '50%',
-                animation: 'premiumPulse 2s ease-in-out infinite'
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
+                animation: 'premiumShine 3s ease-in-out infinite'
               }}></div>
-              <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: '#a5b4fc',
-                borderRadius: '50%',
-                animation: 'premiumPulse 2s ease-in-out infinite 0.5s'
-              }}></div>
-              <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: '#c7d2fe',
-                borderRadius: '50%',
-                animation: 'premiumPulse 2s ease-in-out infinite 1s'
-              }}></div>
+              
+              <h1 style={{
+                fontSize: '5rem',
+                fontWeight: '900',
+                background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                marginBottom: '1.5rem',
+                textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.02em',
+                lineHeight: '1.2'
+              }}>
+                🎵 Songgram
+              </h1>
+              <p style={{
+                fontSize: '1.5rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontWeight: '400',
+                letterSpacing: '0.01em',
+                lineHeight: '1.6'
+              }}>
+                Create personalized songs for your special moments using AI-powered voice generation
+              </p>
             </div>
           </div>
-        </div>
+        </ErrorBoundary>
+
+        {/* Feature Section */}
+        <ErrorBoundary>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '3rem',
+            marginBottom: '5rem'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              backdropFilter: 'blur(40px)',
+              borderRadius: '2rem',
+              padding: '3rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer',
+              transform: 'translateY(0)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-8px) scale(1.02)';
+              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0) scale(1)';
+              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+            }}>
+              <div style={{
+                fontSize: '4rem',
+                marginBottom: '2rem',
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
+                animation: 'premiumFloat 6s ease-in-out infinite'
+              }}>🎵</div>
+              <h3 style={{
+                fontSize: '1.75rem',
+                fontWeight: '800',
+                color: 'white',
+                marginBottom: '1rem',
+                textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.01em'
+              }}>
+                AI-Powered Generation
+              </h3>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '1.25rem',
+                fontWeight: '400',
+                lineHeight: '1.6'
+              }}>
+                Create unique, personalized songs using advanced AI technology and ElevenLabs voice synthesis
+              </p>
+            </div>
+
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              backdropFilter: 'blur(40px)',
+              borderRadius: '2rem',
+              padding: '3rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer',
+              transform: 'translateY(0)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-8px) scale(1.02)';
+              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0) scale(1)';
+              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+            }}>
+              <div style={{
+                fontSize: '4rem',
+                marginBottom: '2rem',
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
+                animation: 'premiumFloat 6s ease-in-out infinite 1s'
+              }}>🎨</div>
+              <h3 style={{
+                fontSize: '1.75rem',
+                fontWeight: '800',
+                color: 'white',
+                marginBottom: '1rem',
+                textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.01em'
+              }}>
+                Multiple Music Styles
+              </h3>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '1.25rem',
+                fontWeight: '400',
+                lineHeight: '1.6'
+              }}>
+                Choose from 15 different music styles including Pop, Rock, Hip Hop, Trap Rap, and more
+              </p>
+            </div>
+
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              backdropFilter: 'blur(40px)',
+              borderRadius: '2rem',
+              padding: '3rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer',
+              transform: 'translateY(0)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-8px) scale(1.02)';
+              e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0) scale(1)';
+              e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+            }}>
+              <div style={{
+                fontSize: '4rem',
+                marginBottom: '2rem',
+                filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
+                animation: 'premiumFloat 6s ease-in-out infinite 2s'
+              }}>💝</div>
+              <h3 style={{
+                fontSize: '1.75rem',
+                fontWeight: '800',
+                color: 'white',
+                marginBottom: '1rem',
+                textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.01em'
+              }}>
+                Personalized Experience
+              </h3>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '1.25rem',
+                fontWeight: '400',
+                lineHeight: '1.6'
+              }}>
+                Tell your story and create songs that capture your special moments and relationships
+              </p>
+            </div>
+          </div>
+        </ErrorBoundary>
 
         {/* Main Content */}
-        <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
-          {!currentSongId ? (
-            <SongForm onSongCreated={setCurrentSongId} />
-          ) : (
+        <ErrorBoundary>
+          {currentSongId ? (
             <SongStatus songId={currentSongId} onReset={() => setCurrentSongId(null)} />
+          ) : (
+            <SongForm onSongCreated={setCurrentSongId} />
           )}
-        </div>
-
-        {/* Premium Features Section */}
-        <div style={{
-          marginTop: '8rem',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
-          gap: '3rem',
-          maxWidth: '90rem',
-          margin: '8rem auto 0'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-            backdropFilter: 'blur(40px)',
-            borderRadius: '2rem',
-            padding: '3rem 2.5rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            transform: 'translateY(0)',
-            transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden'
-          }} onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-12px) scale(1.03)';
-            e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-          }} onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0) scale(1)';
-            e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-          }}>
-            {/* Premium accent line */}
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: '100%',
-              height: '2px',
-              background: 'linear-gradient(90deg, #818cf8 0%, #a5b4fc 50%, #c7d2fe 100%)',
-              animation: 'premiumShine 4s ease-in-out infinite'
-            }}></div>
-            
-            <div style={{ 
-              fontSize: '4rem', 
-              marginBottom: '2rem',
-              filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-              animation: 'premiumFloat 6s ease-in-out infinite'
-            }}>🎭</div>
-            <h3 style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: '800', 
-              color: 'white', 
-              marginBottom: '1.5rem',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '-0.01em'
-            }}>Personalized Stories</h3>
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.85)', 
-              fontSize: '1.25rem',
-              lineHeight: '1.6',
-              fontWeight: '400'
-            }}>Transform your memories into meaningful lyrics</p>
-          </div>
-          
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-            backdropFilter: 'blur(40px)',
-            borderRadius: '2rem',
-            padding: '3rem 2.5rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            transform: 'translateY(0)',
-            transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden'
-          }} onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-12px) scale(1.03)';
-            e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-          }} onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0) scale(1)';
-            e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-          }}>
-            {/* Premium accent line */}
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: '100%',
-              height: '2px',
-              background: 'linear-gradient(90deg, #a5b4fc 0%, #c7d2fe 50%, #e0e7ff 100%)',
-              animation: 'premiumShine 4s ease-in-out infinite 1s'
-            }}></div>
-            
-            <div style={{ 
-              fontSize: '4rem', 
-              marginBottom: '2rem',
-              filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-              animation: 'premiumFloat 6s ease-in-out infinite 1s'
-            }}>🎤</div>
-            <h3 style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: '800', 
-              color: 'white', 
-              marginBottom: '1.5rem',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '-0.01em'
-            }}>AI Voice Generation</h3>
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.85)', 
-              fontSize: '1.25rem',
-              lineHeight: '1.6',
-              fontWeight: '400'
-            }}>Powered by ElevenLabs for natural-sounding vocals</p>
-          </div>
-          
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-            backdropFilter: 'blur(40px)',
-            borderRadius: '2rem',
-            padding: '3rem 2.5rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            transform: 'translateY(0)',
-            transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden'
-          }} onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-12px) scale(1.03)';
-            e.target.style.boxShadow = '0 40px 80px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-          }} onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0) scale(1)';
-            e.target.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-          }}>
-            {/* Premium accent line */}
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: '100%',
-              height: '2px',
-              background: 'linear-gradient(90deg, #c7d2fe 0%, #e0e7ff 50%, #ffffff 100%)',
-              animation: 'premiumShine 4s ease-in-out infinite 2s'
-            }}></div>
-            
-            <div style={{ 
-              fontSize: '4rem', 
-              marginBottom: '2rem',
-              filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
-              animation: 'premiumFloat 6s ease-in-out infinite 2s'
-            }}>💝</div>
-            <h3 style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: '800', 
-              color: 'white', 
-              marginBottom: '1.5rem',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              letterSpacing: '-0.01em'
-            }}>Perfect Gifts</h3>
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.85)', 
-              fontSize: '1.25rem',
-              lineHeight: '1.6',
-              fontWeight: '400'
-            }}>Create unforgettable moments for loved ones</p>
-          </div>
-        </div>
+        </ErrorBoundary>
       </div>
     </div>
   );
