@@ -47,7 +47,12 @@ export function SongForm({ onSongCreated }) {
   ];
 
   useEffect(() => {
-    fetchVoices();
+    // Add error boundary around fetchVoices
+    try {
+      fetchVoices();
+    } catch (error) {
+      console.error('Error in fetchVoices useEffect:', error);
+    }
   }, []);
 
   const fetchVoices = async () => {
@@ -56,14 +61,25 @@ export function SongForm({ onSongCreated }) {
       if (response.ok) {
         const data = await response.json();
         setVoices(data.voices || []);
+      } else {
+        console.error('Failed to fetch voices:', response.status);
+        setVoices([]); // Set empty array as fallback
       }
     } catch (error) {
       console.error('Failed to fetch voices:', error);
+      setVoices([]); // Set empty array as fallback
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form data before submission
+    if (!formData.occasion || !formData.recipientNames || !formData.relationship || !formData.musicStyle || !formData.voiceStyle || !formData.story) {
+      setError('Please fill in all fields');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
@@ -78,12 +94,17 @@ export function SongForm({ onSongCreated }) {
 
       if (response.ok) {
         const data = await response.json();
-        onSongCreated(data.songId);
+        if (data.songId && typeof onSongCreated === 'function') {
+          onSongCreated(data.songId);
+        } else {
+          setError('Invalid response from server');
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to create song');
       }
     } catch (error) {
+      console.error('Form submission error:', error);
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);

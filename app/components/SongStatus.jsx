@@ -36,14 +36,17 @@ export function SongStatus({ songId, onReset }) {
   }, [songId]);
 
   useEffect(() => {
+    let timeTimer;
+    let progressTimer;
+
     // Track time elapsed
-    const timeTimer = setInterval(() => {
+    timeTimer = setInterval(() => {
       setTimeElapsed(prev => prev + 1);
     }, 1000);
 
     // Update progress based on time elapsed for real song generation
     if (status === 'processing') {
-      const progressTimer = setInterval(() => {
+      progressTimer = setInterval(() => {
         setProgress(prev => {
           // More realistic progress for actual song generation
           // Songs typically take 2-5 minutes to generate
@@ -55,14 +58,13 @@ export function SongStatus({ songId, onReset }) {
           return prev + Math.random() * 2; // 0-2% per interval near completion
         });
       }, 3000); // Check every 3 seconds for more realistic progress
-
-      return () => {
-        clearInterval(progressTimer);
-        clearInterval(timeTimer);
-      };
     }
 
-    return () => clearInterval(timeTimer);
+    // Cleanup function
+    return () => {
+      if (timeTimer) clearInterval(timeTimer);
+      if (progressTimer) clearInterval(progressTimer);
+    };
   }, [status]);
 
   // Calculate estimated time remaining based on progress and time elapsed

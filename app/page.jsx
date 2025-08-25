@@ -10,11 +10,20 @@ export default function Home() {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      // Add bounds checking to prevent extreme values
+      const x = Math.max(0, Math.min(e.clientX, window.innerWidth));
+      const y = Math.max(0, Math.min(e.clientY, window.innerHeight));
+      setMousePosition({ x, y });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    // Add error handling
+    try {
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    } catch (error) {
+      console.error('Error setting up mouse tracking:', error);
+      return () => {};
+    }
   }, []);
 
   return (
