@@ -124,23 +124,64 @@ export async function POST(request) {
       // Call ElevenLabs API to generate the song
       console.log('🎵 Calling ElevenLabs text-to-speech API...');
       
-      const elevenLabsResponse = await fetch('https://api.elevenlabs.io/v1/text-to-speech', {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': elevenLabsApiKey
-        },
-        body: JSON.stringify({
-          text: shortPrompt,
-          model_id: 'eleven_multilingual_v2',
-          voice_id: selectedVoiceId,
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75
-          }
-        })
-      });
+      // Try the newer API endpoint first, then fallback to the older one
+      let elevenLabsResponse;
+      let apiEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech';
+      
+      try {
+        elevenLabsResponse = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'audio/mpeg',
+            'Content-Type': 'application/json',
+            'xi-api-key': elevenLabsApiKey
+          },
+          body: JSON.stringify({
+            text: shortPrompt,
+            model_id: 'eleven_monolingual_v1',
+            voice_id: selectedVoiceId,
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75
+            }
+          })
+        });
+
+        // If the first endpoint fails with 404, try the alternative endpoint
+        if (elevenLabsResponse.status === 404) {
+          console.log('🔄 First endpoint returned 404, trying alternative endpoint...');
+          
+          // Try the alternative endpoint (some users report this works better)
+          apiEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech/stream';
+          
+          elevenLabsResponse = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': elevenLabsApiKey
+            },
+            body: JSON.stringify({
+              text: shortPrompt,
+              model_id: 'eleven_monolingual_v1',
+              voice_id: selectedVoiceId,
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.75
+              }
+            })
+          });
+          
+          console.log('🔄 Alternative endpoint response status:', elevenLabsResponse.status);
+        }
+
+      } catch (fetchError) {
+        console.error('❌ Fetch error:', fetchError);
+        return Response.json(
+          { error: 'Failed to connect to ElevenLabs. Please check your internet connection and try again.' },
+          { status: 500 }
+        );
+      }
 
       if (!elevenLabsResponse.ok) {
         const errorData = await elevenLabsResponse.text();
@@ -159,7 +200,7 @@ export async function POST(request) {
           );
         } else if (elevenLabsResponse.status === 404) {
           return Response.json(
-            { error: 'ElevenLabs text-to-speech endpoint not found. API may have changed.' },
+            { error: 'ElevenLabs text-to-speech endpoint not found. This may be a temporary API issue. Please try again in a few minutes.' },
             { status: 500 }
           );
         } else if (elevenLabsResponse.status === 429) {
