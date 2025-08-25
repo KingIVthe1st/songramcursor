@@ -2,26 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-interface SongStatusProps {
-  songId: string;
-  onReset: () => void;
-}
-
-interface SongRequest {
-  status: 'processing' | 'completed' | 'failed';
-  occasion?: string;
-  recipientNames?: string;
-  relationship?: string;
-  musicStyle?: string;
-  voiceStyle?: string;
-  story?: string;
-  audioUrl?: string;
-  eta?: number;
-}
-
-export function SongStatus({ songId, onReset }: SongStatusProps) {
-  const [songData, setSongData] = useState<SongRequest | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+export function SongStatus({ songId, onReset }) {
+  const [songData, setSongData] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
     const checkStatus = async () => {

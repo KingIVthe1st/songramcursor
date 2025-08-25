@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 // Store songs in memory (in production this would be a database)
 const songRequests = new Map();
 
-export async function GET(request: NextRequest) {
+export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const songId = searchParams.get('songId');
     
     if (!songId) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Song ID is required' },
         { status: 400 }
       );
@@ -18,14 +18,14 @@ export async function GET(request: NextRequest) {
     const songRequest = songRequests.get(songId);
     
     if (!songRequest) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Song not found' },
         { status: 404 }
       );
     }
 
     // Return the song request with all the new fields
-    return NextResponse.json({
+    return Response.json({
       status: songRequest.status,
       occasion: songRequest.occasion,
       recipientNames: songRequest.recipientNames,
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('❌ Error checking song status:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to check song status' },
       { status: 500 }
     );

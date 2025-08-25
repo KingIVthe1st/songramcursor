@@ -1,13 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Voice } from './types';
 
-interface SongFormProps {
-  onSongCreated: (songId: string) => void;
-}
-
-export function SongForm({ onSongCreated }: SongFormProps) {
+export function SongForm({ onSongCreated }) {
   const [formData, setFormData] = useState({
     occasion: '',
     recipientNames: '',
@@ -16,7 +11,7 @@ export function SongForm({ onSongCreated }: SongFormProps) {
     voiceStyle: '',
     story: ''
   });
-  const [voices, setVoices] = useState<Voice[]>([]);
+  const [voices, setVoices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -74,7 +69,7 @@ export function SongForm({ onSongCreated }: SongFormProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -102,7 +97,7 @@ export function SongForm({ onSongCreated }: SongFormProps) {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (e) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value

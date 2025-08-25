@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(request) {
   try {
     const apiKey = process.env.ELEVENLABS_API_KEY;
     
     if (!apiKey) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'ElevenLabs API key not configured' },
         { status: 500 }
       );
@@ -24,10 +24,10 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    return Response.json(data);
   } catch (error) {
     console.error('Error fetching ElevenLabs voices:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to fetch voices' },
       { status: 500 }
     );

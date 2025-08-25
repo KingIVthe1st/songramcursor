@@ -5,7 +5,7 @@ import { SongForm } from './components/SongForm';
 import { SongStatus } from './components/SongStatus';
 
 export default function Home() {
-  const [currentSongId, setCurrentSongId] = useState<string | null>(null);
+  const [currentSongId, setCurrentSongId] = useState(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">

@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 // Store songs in memory (in production this would be a database)
 const songRequests = new Map();
 
-export async function POST(request: NextRequest) {
+export async function POST(request) {
   try {
     const formData = await request.json();
     
@@ -11,7 +9,7 @@ export async function POST(request: NextRequest) {
     
     // Validate required fields
     if (!formData.occasion || !formData.recipientNames || !formData.relationship || !formData.musicStyle || !formData.voiceStyle || !formData.story) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
@@ -58,10 +56,10 @@ export async function POST(request: NextRequest) {
       storyLength: formData.story.length
     });
     
-    return NextResponse.json(mockResponse);
+    return Response.json(mockResponse);
   } catch (error) {
     console.error('❌ Error in song generation:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to process song generation request' },
       { status: 500 }
     );
