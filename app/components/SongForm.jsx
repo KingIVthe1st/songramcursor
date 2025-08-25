@@ -106,31 +106,60 @@ export function SongForm({ onSongCreated }) {
 
   return (
     <div style={{
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(8px)',
-      borderRadius: '0.5rem',
-      padding: '2rem',
-      border: '1px solid rgba(255, 255, 255, 0.2)'
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)',
+      backdropFilter: 'blur(30px)',
+      borderRadius: '2rem',
+      padding: '3rem',
+      border: '1px solid rgba(255, 255, 255, 0.25)',
+      boxShadow: '0 35px 70px rgba(0, 0, 0, 0.2)',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Liquid accent elements */}
+      <div style={{
+        position: 'absolute',
+        top: '-20%',
+        right: '-20%',
+        width: '40%',
+        height: '40%',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+        animation: 'float 12s ease-in-out infinite',
+        pointerEvents: 'none'
+      }}></div>
+      <div style={{
+        position: 'absolute',
+        bottom: '-15%',
+        left: '-15%',
+        width: '30%',
+        height: '30%',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+        animation: 'float 15s ease-in-out infinite reverse',
+        pointerEvents: 'none'
+      }}></div>
+      
       <h2 style={{
-        fontSize: '1.875rem',
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: '2rem',
-        textAlign: 'center'
+        fontSize: '2.5rem',
+        fontWeight: '800',
+        background: 'linear-gradient(135deg, #fff 0%, #e0e7ff 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        marginBottom: '2.5rem',
+        textAlign: 'center',
+        textShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
       }}>
         Create Your Personalized Song
       </h2>
       
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', position: 'relative', zIndex: 1 }}>
         {/* Occasion */}
         <div>
           <label style={{
             display: 'block',
             color: 'white',
-            fontWeight: '500',
-            marginBottom: '0.75rem',
-            fontSize: '1.125rem'
+            fontWeight: '600',
+            marginBottom: '1rem',
+            fontSize: '1.25rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
           }}>
             What's the occasion?
           </label>
@@ -140,13 +169,24 @@ export function SongForm({ onSongCreated }) {
             onChange={handleInputChange}
             style={{
               width: '100%',
-              padding: '0.75rem 1rem',
-              borderRadius: '0.5rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '1rem 1.25rem',
+              borderRadius: '1rem',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               color: 'white',
               outline: 'none',
-              fontSize: '1.125rem'
+              fontSize: '1.125rem',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            }}
+            onFocus={(e) => {
+              e.target.style.transform = 'scale(1.02)';
+              e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onBlur={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
             }}
             required
           >
@@ -160,16 +200,17 @@ export function SongForm({ onSongCreated }) {
         {/* Recipient and Relationship */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '1.5rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '2rem'
         }}>
           <div>
             <label style={{
               display: 'block',
               color: 'white',
-              fontWeight: '500',
-              marginBottom: '0.75rem',
-              fontSize: '1.125rem'
+              fontWeight: '600',
+              marginBottom: '1rem',
+              fontSize: '1.25rem',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}>
               Who's this for?
             </label>
@@ -181,13 +222,24 @@ export function SongForm({ onSongCreated }) {
               placeholder="Sarah, Mom, John, Alex..."
               style={{
                 width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                padding: '1rem 1.25rem',
+                borderRadius: '1rem',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 color: 'white',
                 outline: 'none',
-                fontSize: '1.125rem'
+                fontSize: '1.125rem',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+              }}
+              onFocus={(e) => {
+                e.target.style.transform = 'scale(1.02)';
+                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
               }}
               required
             />
@@ -197,9 +249,10 @@ export function SongForm({ onSongCreated }) {
             <label style={{
               display: 'block',
               color: 'white',
-              fontWeight: '500',
-              marginBottom: '0.75rem',
-              fontSize: '1.125rem'
+              fontWeight: '600',
+              marginBottom: '1rem',
+              fontSize: '1.25rem',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
             }}>
               Your relationship
             </label>
@@ -209,13 +262,24 @@ export function SongForm({ onSongCreated }) {
               onChange={handleInputChange}
               style={{
                 width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                padding: '1rem 1.25rem',
+                borderRadius: '1rem',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 color: 'white',
                 outline: 'none',
-                fontSize: '1.125rem'
+                fontSize: '1.125rem',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+              }}
+              onFocus={(e) => {
+                e.target.style.transform = 'scale(1.02)';
+                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
               }}
               required
             >
@@ -232,9 +296,10 @@ export function SongForm({ onSongCreated }) {
           <label style={{
             display: 'block',
             color: 'white',
-            fontWeight: '500',
-            marginBottom: '0.75rem',
-            fontSize: '1.125rem'
+            fontWeight: '600',
+            marginBottom: '1rem',
+            fontSize: '1.25rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
           }}>
             Music style
           </label>
@@ -245,14 +310,25 @@ export function SongForm({ onSongCreated }) {
               onChange={handleInputChange}
               style={{
                 width: '100%',
-                padding: '0.75rem 1rem',
-                paddingRight: '3rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                padding: '1rem 1.25rem',
+                paddingRight: '4rem',
+                borderRadius: '1rem',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 color: 'white',
                 outline: 'none',
-                fontSize: '1.125rem'
+                fontSize: '1.125rem',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+              }}
+              onFocus={(e) => {
+                e.target.style.transform = 'scale(1.02)';
+                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
               }}
               required
             >
@@ -263,10 +339,12 @@ export function SongForm({ onSongCreated }) {
             </select>
             <div style={{
               position: 'absolute',
-              right: '1rem',
+              right: '1.25rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: 'white'
+              color: 'white',
+              fontSize: '1.5rem',
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))'
             }}>
               🎤
             </div>
@@ -278,9 +356,10 @@ export function SongForm({ onSongCreated }) {
           <label style={{
             display: 'block',
             color: 'white',
-            fontWeight: '500',
-            marginBottom: '0.75rem',
-            fontSize: '1.125rem'
+            fontWeight: '600',
+            marginBottom: '1rem',
+            fontSize: '1.25rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
           }}>
             Choose Your Voice Style
           </label>
@@ -290,13 +369,24 @@ export function SongForm({ onSongCreated }) {
             onChange={handleInputChange}
             style={{
               width: '100%',
-              padding: '0.75rem 1rem',
-              borderRadius: '0.5rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '1rem 1.25rem',
+              borderRadius: '1rem',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               color: 'white',
               outline: 'none',
-              fontSize: '1.125rem'
+              fontSize: '1.125rem',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            }}
+            onFocus={(e) => {
+              e.target.style.transform = 'scale(1.02)';
+              e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+            }}
+            onBlur={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
             }}
             required
           >
@@ -307,7 +397,12 @@ export function SongForm({ onSongCreated }) {
               </option>
             ))}
           </select>
-          <p style={{ color: '#bfdbfe', marginTop: '0.5rem' }}>{voices.length} voices available</p>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.8)', 
+            marginTop: '0.75rem',
+            fontSize: '1rem',
+            fontWeight: '500'
+          }}>{voices.length} voices available</p>
         </div>
 
         {/* Story */}
@@ -315,9 +410,10 @@ export function SongForm({ onSongCreated }) {
           <label style={{
             display: 'block',
             color: 'white',
-            fontWeight: '500',
-            marginBottom: '0.75rem',
-            fontSize: '1.125rem'
+            fontWeight: '600',
+            marginBottom: '1rem',
+            fontSize: '1.25rem',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
           }}>
             Share your story
           </label>
@@ -331,23 +427,39 @@ export function SongForm({ onSongCreated }) {
               maxLength={500}
               style={{
                 width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                padding: '1rem 1.25rem',
+                borderRadius: '1rem',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 color: 'white',
                 outline: 'none',
                 fontSize: '1.125rem',
-                resize: 'none'
+                backdropFilter: 'blur(10px)',
+                resize: 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+              }}
+              onFocus={(e) => {
+                e.target.style.transform = 'scale(1.02)';
+                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
               }}
               required
             />
             <div style={{
               position: 'absolute',
-              top: '0.75rem',
-              right: '0.75rem',
-              color: '#bfdbfe',
-              fontSize: '0.875rem'
+              top: '1rem',
+              right: '1rem',
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              background: 'rgba(0, 0, 0, 0.2)',
+              padding: '0.25rem 0.75rem',
+              borderRadius: '0.5rem',
+              backdropFilter: 'blur(10px)'
             }}>
               {formData.story.length}/500
             </div>
@@ -356,12 +468,13 @@ export function SongForm({ onSongCreated }) {
 
         {error && (
           <div style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.2)',
-            border: '1px solid rgba(239, 68, 68, 0.5)',
-            borderRadius: '0.5rem',
-            padding: '1rem'
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%)',
+            border: '1px solid rgba(239, 68, 68, 0.4)',
+            borderRadius: '1rem',
+            padding: '1.25rem',
+            backdropFilter: 'blur(10px)'
           }}>
-            <p style={{ color: '#fecaca' }}>{error}</p>
+            <p style={{ color: '#fecaca', fontWeight: '500' }}>{error}</p>
           </div>
         )}
 
@@ -370,16 +483,33 @@ export function SongForm({ onSongCreated }) {
           disabled={isLoading}
           style={{
             width: '100%',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+            backgroundSize: '200% 200%',
+            animation: isLoading ? 'none' : 'liquidFlow 3s ease infinite',
             color: 'white',
-            fontWeight: 'bold',
-            padding: '1rem 1.5rem',
-            borderRadius: '0.5rem',
+            fontWeight: '700',
+            padding: '1.25rem 2rem',
+            borderRadius: '1.5rem',
             border: 'none',
-            fontSize: '1.25rem',
+            fontSize: '1.375rem',
             cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.5 : 1,
-            transition: 'all 0.2s'
+            opacity: isLoading ? 0.6 : 1,
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
+            transform: 'translateY(0)',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading) {
+              e.target.style.transform = 'translateY(-3px) scale(1.02)';
+              e.target.style.boxShadow = '0 20px 45px rgba(0, 0, 0, 0.25)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isLoading) {
+              e.target.style.transform = 'translateY(0) scale(1)';
+              e.target.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2)';
+            }
           }}
         >
           {isLoading ? 'Creating Your Song...' : '🎵 Generate My Song'}

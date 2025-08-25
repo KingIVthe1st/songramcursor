@@ -29,6 +29,20 @@ export default function RootLayout({ children }) {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
           }
+          @keyframes liquidFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+          }
+          @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+          }
         `}</style>
       </head>
       <body className="font-sans">{children}</body>
