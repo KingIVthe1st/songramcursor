@@ -9,6 +9,12 @@ interface SongStatusProps {
 
 interface SongRequest {
   status: 'processing' | 'completed' | 'failed';
+  occasion?: string;
+  recipientNames?: string;
+  relationship?: string;
+  musicStyle?: string;
+  voiceStyle?: string;
+  story?: string;
   audioUrl?: string;
   eta?: number;
 }
@@ -76,6 +82,23 @@ export function SongStatus({ songId, onReset }: SongStatusProps) {
           </p>
         </div>
 
+        {/* Song Details */}
+        <div className="bg-white/10 rounded-lg p-6 mb-8 text-left">
+          <h3 className="text-xl font-semibold text-white mb-4">Song Details</h3>
+          <div className="grid md:grid-cols-2 gap-4 text-blue-200">
+            <div>
+              <p><strong>Occasion:</strong> {songData.occasion}</p>
+              <p><strong>For:</strong> {songData.recipientNames}</p>
+              <p><strong>Relationship:</strong> {songData.relationship}</p>
+            </div>
+            <div>
+              <p><strong>Music Style:</strong> {songData.musicStyle}</p>
+              <p><strong>Voice Style:</strong> {songData.voiceStyle}</p>
+              <p><strong>Story Length:</strong> {songData.story?.length || 0} characters</p>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-8">
           <div className="w-full bg-white/20 rounded-full h-3 mb-4">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full animate-pulse" style={{ width: '60%' }}></div>
@@ -92,11 +115,11 @@ export function SongStatus({ songId, onReset }: SongStatusProps) {
           </div>
           <div className="flex items-center justify-center space-x-2">
             <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
-            <span>Composing lyrics and melody</span>
+            <span>Composing lyrics and melody in {songData.musicStyle} style</span>
           </div>
           <div className="flex items-center justify-center space-x-2">
             <div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse"></div>
-            <span>Generating vocals with AI</span>
+            <span>Generating vocals with AI voice</span>
           </div>
         </div>
       </div>
@@ -114,6 +137,23 @@ export function SongStatus({ songId, onReset }: SongStatusProps) {
           <p className="text-blue-200 text-lg mb-6">
             Your personalized song has been created successfully
           </p>
+        </div>
+
+        {/* Song Details */}
+        <div className="bg-white/10 rounded-lg p-6 mb-8 text-left">
+          <h3 className="text-xl font-semibold text-white mb-4">Song Details</h3>
+          <div className="grid md:grid-cols-2 gap-4 text-blue-200">
+            <div>
+              <p><strong>Occasion:</strong> {songData.occasion}</p>
+              <p><strong>For:</strong> {songData.recipientNames}</p>
+              <p><strong>Relationship:</strong> {songData.relationship}</p>
+            </div>
+            <div>
+              <p><strong>Music Style:</strong> {songData.musicStyle}</p>
+              <p><strong>Voice Style:</strong> {songData.voiceStyle}</p>
+              <p><strong>Story Length:</strong> {songData.story?.length || 0} characters</p>
+            </div>
+          </div>
         </div>
 
         {songData.audioUrl && (

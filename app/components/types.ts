@@ -13,10 +13,11 @@ export interface Voice {
 
 export interface SongRequest {
   occasion: string;
-  recipient: string;
+  recipientNames: string;
   relationship: string;
+  musicStyle: string;
+  voiceStyle: string;
   story: string;
-  selectedVoiceId: string;
 }
 
 export interface SongResponse {

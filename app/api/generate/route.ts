@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.json();
     
-    console.log('🎵 Received song generation request for:', formData.recipient);
+    console.log('🎵 Received song generation request for:', formData.recipientNames);
     
     // Validate required fields
-    if (!formData.occasion || !formData.recipient || !formData.relationship || !formData.story || !formData.selectedVoiceId) {
+    if (!formData.occasion || !formData.recipientNames || !formData.relationship || !formData.musicStyle || !formData.voiceStyle || !formData.story) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -49,6 +49,15 @@ export async function POST(request: NextRequest) {
     }, 3000);
     
     console.log('✅ Song generation request submitted:', songId);
+    console.log('📝 Song details:', {
+      occasion: formData.occasion,
+      recipient: formData.recipientNames,
+      relationship: formData.relationship,
+      musicStyle: formData.musicStyle,
+      voiceStyle: formData.voiceStyle,
+      storyLength: formData.story.length
+    });
+    
     return NextResponse.json(mockResponse);
   } catch (error) {
     console.error('❌ Error in song generation:', error);

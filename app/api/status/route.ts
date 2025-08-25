@@ -24,7 +24,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(songRequest);
+    // Return the song request with all the new fields
+    return NextResponse.json({
+      status: songRequest.status,
+      occasion: songRequest.occasion,
+      recipientNames: songRequest.recipientNames,
+      relationship: songRequest.relationship,
+      musicStyle: songRequest.musicStyle,
+      voiceStyle: songRequest.voiceStyle,
+      story: songRequest.story,
+      audioUrl: songRequest.audioUrl,
+      eta: songRequest.eta,
+      submittedAt: songRequest.submittedAt,
+      completedAt: songRequest.completedAt
+    });
   } catch (error) {
     console.error('❌ Error checking song status:', error);
     return NextResponse.json(
