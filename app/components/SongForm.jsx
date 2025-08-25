@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 
 function SongFormComponent({ onSongCreated }) {
@@ -17,7 +17,8 @@ function SongFormComponent({ onSongCreated }) {
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState('');
 
-  const occasions = [
+  // Memoize static data to prevent recreation on every render
+  const occasions = useMemo(() => [
     'Birthday',
     'Anniversary',
     'Graduation',
@@ -27,9 +28,9 @@ function SongFormComponent({ onSongCreated }) {
     'Holiday',
     'Just Because',
     'Other'
-  ];
+  ], []);
 
-  const musicStyles = [
+  const musicStyles = useMemo(() => [
     'Pop',
     'Rock',
     'Country',
@@ -45,18 +46,10 @@ function SongFormComponent({ onSongCreated }) {
     'Ballads',
     'Reggae',
     'Soul'
-  ];
+  ], []);
 
-  useEffect(() => {
-    // Add error boundary around fetchVoices
-    try {
-      fetchVoices();
-    } catch (error) {
-      console.error('Error in fetchVoices useEffect:', error);
-    }
-  }, []);
-
-  const fetchVoices = async () => {
+  // Stabilize the fetchVoices function
+  const fetchVoices = useCallback(async () => {
     try {
       const response = await fetch('/api/elevenlabs-voices');
       if (response.ok) {
@@ -70,9 +63,37 @@ function SongFormComponent({ onSongCreated }) {
       console.error('Failed to fetch voices:', error);
       setVoices([]); // Set empty array as fallback
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    // Add error boundary around fetchVoices
+    try {
+      fetchVoices();
+    } catch (error) {
+      console.error('Error in fetchVoices useEffect:', error);
+    }
+  }, [fetchVoices]);
+
+  // Stabilize the input change handler
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }, []);
+
+  // Stabilize the field focus handlers
+  const handleFieldFocus = useCallback((fieldName) => {
+    setFocusedField(fieldName);
+  }, []);
+
+  const handleFieldBlur = useCallback(() => {
+    setFocusedField('');
+  }, []);
+
+  // Stabilize the form submission handler
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     // Validate form data before submission
@@ -110,35 +131,45 @@ function SongFormComponent({ onSongCreated }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData, onSongCreated]);
 
-  const handleInputChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+  // Memoize the form container style
+  const formContainerStyle = useMemo(() => ({
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
+    backdropFilter: 'blur(50px)',
+    borderRadius: '3rem',
+    padding: '4rem',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    position: 'relative',
+    overflow: 'hidden',
+    animation: 'premiumSlideIn 1s ease-out'
+  }), []);
 
-  const handleFieldFocus = (fieldName) => {
-    setFocusedField(fieldName);
-  };
+  // Memoize the form style
+  const formStyle = useMemo(() => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2rem',
+    animation: 'premiumSlideIn 1s ease-out 0.2s both'
+  }), []);
 
-  const handleFieldBlur = () => {
-    setFocusedField('');
-  };
+  // Memoize the title style
+  const titleStyle = useMemo(() => ({
+    fontSize: '3rem',
+    fontWeight: '900',
+    background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    marginBottom: '3rem',
+    textAlign: 'center',
+    textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+    letterSpacing: '-0.02em',
+    lineHeight: '1.2'
+  }), []);
 
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
-      backdropFilter: 'blur(50px)',
-      borderRadius: '3rem',
-      padding: '4rem',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-      position: 'relative',
-      overflow: 'hidden',
-      animation: 'premiumSlideIn 1s ease-out'
-    }}>
+    <div style={formContainerStyle}>
       {/* Premium background elements */}
       <div style={{
         position: 'absolute',
@@ -172,27 +203,11 @@ function SongFormComponent({ onSongCreated }) {
         animation: 'premiumShine 6s ease-in-out infinite'
       }}></div>
       
-      <h2 style={{
-        fontSize: '3rem',
-        fontWeight: '900',
-        background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        marginBottom: '3rem',
-        textAlign: 'center',
-        textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        letterSpacing: '-0.02em',
-        lineHeight: '1.2'
-      }}>
+      <h2 style={titleStyle}>
         Create Your Personalized Song
       </h2>
 
-      <form onSubmit={handleSubmit} style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '2rem',
-        animation: 'premiumSlideIn 1s ease-out 0.2s both'
-      }}>
+      <form onSubmit={handleSubmit} style={formStyle}>
         {/* Occasion Field */}
         <div style={{ animation: 'premiumSlideIn 1s ease-out 0.3s both' }}>
           <label style={{

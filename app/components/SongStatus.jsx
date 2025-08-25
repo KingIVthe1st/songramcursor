@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 
 function SongStatusComponent({ songId, onReset }) {
@@ -10,55 +10,62 @@ function SongStatusComponent({ songId, onReset }) {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(120); // 2 minutes default
 
-  useEffect(() => {
-    const checkStatus = async () => {
-      try {
-        const response = await fetch(`/api/status?songId=${songId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSongData(data);
-          setStatus(data.status);
-          
-          if (data.status === 'completed') {
-            setProgress(100);
-            setEstimatedTimeRemaining(0);
-          }
+  // Stabilize the status check function
+  const checkStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/status?songId=${songId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSongData(data);
+        setStatus(data.status);
+        
+        if (data.status === 'completed') {
+          setProgress(100);
+          setEstimatedTimeRemaining(0);
         }
-      } catch (error) {
-        console.error('Failed to check status:', error);
       }
-    };
+    } catch (error) {
+      console.error('Failed to check status:', error);
+    }
+  }, [songId]);
 
+  useEffect(() => {
     // Check status every 5 seconds instead of 2 seconds for real API calls
     const interval = setInterval(checkStatus, 5000);
     checkStatus();
 
     return () => clearInterval(interval);
-  }, [songId]);
+  }, [checkStatus]);
+
+  // Stabilize the progress update function
+  const updateProgress = useCallback(() => {
+    setProgress(prev => {
+      // More realistic progress for actual song generation
+      // Songs typically take 2-5 minutes to generate
+      if (prev >= 95) return prev;
+      
+      // Slower progress at the beginning, faster in the middle
+      if (prev < 30) return prev + Math.random() * 3; // 0-3% per interval
+      if (prev < 70) return prev + Math.random() * 5; // 0-5% per interval
+      return prev + Math.random() * 2; // 0-2% per interval near completion
+    });
+  }, []);
+
+  // Stabilize the time update function
+  const updateTime = useCallback(() => {
+    setTimeElapsed(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     let timeTimer;
     let progressTimer;
 
     // Track time elapsed
-    timeTimer = setInterval(() => {
-      setTimeElapsed(prev => prev + 1);
-    }, 1000);
+    timeTimer = setInterval(updateTime, 1000);
 
     // Update progress based on time elapsed for real song generation
     if (status === 'processing') {
-      progressTimer = setInterval(() => {
-        setProgress(prev => {
-          // More realistic progress for actual song generation
-          // Songs typically take 2-5 minutes to generate
-          if (prev >= 95) return prev;
-          
-          // Slower progress at the beginning, faster in the middle
-          if (prev < 30) return prev + Math.random() * 3; // 0-3% per interval
-          if (prev < 70) return prev + Math.random() * 5; // 0-5% per interval
-          return prev + Math.random() * 2; // 0-2% per interval near completion
-        });
-      }, 3000); // Check every 3 seconds for more realistic progress
+      progressTimer = setInterval(updateProgress, 3000); // Check every 3 seconds for more realistic progress
     }
 
     // Cleanup function
@@ -66,7 +73,7 @@ function SongStatusComponent({ songId, onReset }) {
       if (timeTimer) clearInterval(timeTimer);
       if (progressTimer) clearInterval(progressTimer);
     };
-  }, [status]);
+  }, [status, updateProgress, updateTime]);
 
   // Calculate estimated time remaining based on progress and time elapsed
   useEffect(() => {
@@ -78,19 +85,58 @@ function SongStatusComponent({ songId, onReset }) {
     }
   }, [progress, timeElapsed]);
 
+  // Memoize the completed view styles
+  const completedContainerStyle = useMemo(() => ({
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
+    backdropFilter: 'blur(50px)',
+    borderRadius: '3rem',
+    padding: '4rem',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    position: 'relative',
+    overflow: 'hidden',
+    animation: 'premiumSlideIn 1s ease-out'
+  }), []);
+
+  // Memoize the processing view styles
+  const processingContainerStyle = useMemo(() => ({
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
+    backdropFilter: 'blur(50px)',
+    borderRadius: '3rem',
+    padding: '4rem',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    position: 'relative',
+    overflow: 'hidden',
+    animation: 'premiumSlideIn 1s ease-out'
+  }), []);
+
+  // Memoize the title style
+  const titleStyle = useMemo(() => ({
+    fontSize: '3rem',
+    fontWeight: '900',
+    background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    marginBottom: '3rem',
+    textAlign: 'center',
+    textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+    letterSpacing: '-0.02em',
+    lineHeight: '1.2'
+  }), []);
+
+  // Memoize the subtitle style
+  const subtitleStyle = useMemo(() => ({
+    fontSize: '1.5rem',
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: '400',
+    letterSpacing: '0.01em',
+    lineHeight: '1.6'
+  }), []);
+
   if (status === 'completed') {
     return (
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
-        backdropFilter: 'blur(50px)',
-        borderRadius: '3rem',
-        padding: '4rem',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        position: 'relative',
-        overflow: 'hidden',
-        animation: 'premiumSlideIn 1s ease-out'
-      }}>
+      <div style={completedContainerStyle}>
         {/* Premium background elements */}
         <div style={{
           position: 'absolute',
@@ -132,26 +178,10 @@ function SongStatusComponent({ songId, onReset }) {
             animation: 'premiumBounce 2s ease-in-out infinite',
             color: '#22c55e'
           }}>🎉</div>
-          <h2 style={{
-            fontSize: '3rem',
-            fontWeight: '900',
-            background: 'linear-gradient(135deg, #ffffff 0%, #dcfce7 25%, #bbf7d0 50%, #86efac 75%, #22c55e 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '1.5rem',
-            textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            letterSpacing: '-0.02em',
-            lineHeight: '1.2'
-          }}>
+          <h2 style={titleStyle}>
             Your Song is Ready!
           </h2>
-          <p style={{
-            fontSize: '1.5rem',
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontWeight: '400',
-            letterSpacing: '0.01em',
-            lineHeight: '1.6'
-          }}>
+          <p style={subtitleStyle}>
             Your personalized song has been generated successfully with ElevenLabs AI
           </p>
         </div>
@@ -379,17 +409,7 @@ function SongStatusComponent({ songId, onReset }) {
   }
 
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
-      backdropFilter: 'blur(50px)',
-      borderRadius: '3rem',
-      padding: '4rem',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      boxShadow: '0 60px 120px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-      position: 'relative',
-      overflow: 'hidden',
-      animation: 'premiumSlideIn 1s ease-out'
-    }}>
+    <div style={processingContainerStyle}>
       {/* Premium background elements */}
       <div style={{
         position: 'absolute',
@@ -434,26 +454,10 @@ function SongStatusComponent({ songId, onReset }) {
           animation: 'premiumRotate 1.5s linear infinite',
           filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
         }}></div>
-        <h2 style={{
-          fontSize: '3rem',
-          fontWeight: '900',
-          background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 25%, #c7d2fe 50%, #a5b4fc 75%, #818cf8 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          marginBottom: '1.5rem',
-          textShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          letterSpacing: '-0.02em',
-          lineHeight: '1.2'
-        }}>
+        <h2 style={titleStyle}>
           Creating Your Song
         </h2>
-        <p style={{
-          fontSize: '1.5rem',
-          color: 'rgba(255, 255, 255, 0.9)',
-          fontWeight: '400',
-          letterSpacing: '0.01em',
-          lineHeight: '1.6'
-        }}>
+        <p style={subtitleStyle}>
           Our AI is crafting something special just for you using ElevenLabs
         </p>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { SongForm } from './components/SongForm';
 import { SongStatus } from './components/SongStatus';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -9,34 +9,100 @@ export default function Home() {
   const [currentSongId, setCurrentSongId] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      // Add bounds checking to prevent extreme values
-      const x = Math.max(0, Math.min(e.clientX, window.innerWidth));
-      const y = Math.max(0, Math.min(e.clientY, window.innerHeight));
-      setMousePosition({ x, y });
-    };
+  // Stabilize the mouse position handler with useCallback
+  const handleMouseMove = useCallback((e) => {
+    // Add bounds checking to prevent extreme values
+    const x = Math.max(0, Math.min(e.clientX, window.innerWidth));
+    const y = Math.max(0, Math.min(e.clientY, window.innerHeight));
+    
+    // Only update if position actually changed (prevents unnecessary re-renders)
+    setMousePosition(prev => {
+      if (Math.abs(prev.x - x) > 5 || Math.abs(prev.y - y) > 5) {
+        return { x, y };
+      }
+      return prev;
+    });
+  }, []);
 
-    // Add error handling
-    try {
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    } catch (error) {
-      console.error('Error setting up mouse tracking:', error);
-      return () => {};
+  // Stabilize the song creation handler
+  const handleSongCreated = useCallback((songId) => {
+    if (songId && typeof songId === 'string') {
+      setCurrentSongId(songId);
     }
   }, []);
 
+  // Stabilize the reset handler
+  const handleReset = useCallback(() => {
+    setCurrentSongId(null);
+  }, []);
+
+  useEffect(() => {
+    // Add error handling and throttling for mouse tracking
+    let isActive = true;
+    
+    const throttledMouseMove = (e) => {
+      if (!isActive) return;
+      
+      // Throttle mouse events to prevent excessive updates
+      requestAnimationFrame(() => {
+        if (isActive) {
+          handleMouseMove(e);
+        }
+      });
+    };
+
+    try {
+      window.addEventListener('mousemove', throttledMouseMove, { passive: true });
+      
+      return () => {
+        isActive = false;
+        window.removeEventListener('mousemove', throttledMouseMove);
+      };
+    } catch (error) {
+      console.error('Error setting up mouse tracking:', error);
+      return () => {
+        isActive = false;
+      };
+    }
+  }, [handleMouseMove]);
+
+  // Memoize the background style to prevent unnecessary re-renders
+  const backgroundStyle = useMemo(() => ({
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%)',
+    backgroundSize: '400% 400%',
+    animation: 'premiumFlow 25s ease infinite',
+    position: 'relative',
+    overflow: 'hidden',
+    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
+  }), []);
+
+  // Memoize the container style
+  const containerStyle = useMemo(() => ({
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '2rem 1rem',
+    position: 'relative',
+    zIndex: 1
+  }), []);
+
+  // Memoize the cursor follower style
+  const cursorStyle = useMemo(() => ({
+    position: 'fixed',
+    left: mousePosition.x - 20,
+    top: mousePosition.y - 20,
+    width: '40px',
+    height: '40px',
+    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+    borderRadius: '50%',
+    pointerEvents: 'none',
+    zIndex: 9999,
+    transition: 'all 0.1s ease-out',
+    filter: 'blur(1px)'
+  }), [mousePosition.x, mousePosition.y]);
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%)',
-      backgroundSize: '400% 400%',
-      animation: 'premiumFlow 25s ease infinite',
-      position: 'relative',
-      overflow: 'hidden',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-    }}>
+    <div style={backgroundStyle}>
       {/* Premium background elements */}
       <div style={{
         position: 'absolute',
@@ -58,27 +124,9 @@ export default function Home() {
       }}></div>
       
       {/* Interactive cursor follower */}
-      <div style={{
-        position: 'fixed',
-        left: mousePosition.x - 20,
-        top: mousePosition.y - 20,
-        width: '40px',
-        height: '40px',
-        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        zIndex: 9999,
-        transition: 'all 0.1s ease-out',
-        filter: 'blur(1px)'
-      }}></div>
+      <div style={cursorStyle}></div>
       
-      <div style={{
-        maxWidth: '1400px',
-        margin: '0 auto',
-        padding: '2rem 1rem',
-        position: 'relative',
-        zIndex: 1
-      }}>
+      <div style={containerStyle}>
         {/* Premium Header */}
         <ErrorBoundary>
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
@@ -279,9 +327,9 @@ export default function Home() {
         {/* Main Content */}
         <ErrorBoundary>
           {currentSongId ? (
-            <SongStatus songId={currentSongId} onReset={() => setCurrentSongId(null)} />
+            <SongStatus songId={currentSongId} onReset={handleReset} />
           ) : (
-            <SongForm onSongCreated={setCurrentSongId} />
+            <SongForm onSongCreated={handleSongCreated} />
           )}
         </ErrorBoundary>
       </div>
