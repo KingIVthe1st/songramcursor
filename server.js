@@ -45,26 +45,115 @@ app.post('/api/generate-music', async (req, res) => {
     console.log('🎼 Music generation prompt:', musicPrompt);
     console.log('🔑 Using API key:', process.env.ELEVENLABS_API_KEY.substring(0, 10) + '...');
 
-    // Call ElevenLabs Music API
-    const elevenLabsResponse = await fetch('https://api.elevenlabs.io/v1/music/generate', {
-      method: 'POST',
-      headers: {
-        'Accept': 'audio/mpeg',
-        'Content-Type': 'application/json',
-        'xi-api-key': process.env.ELEVENLABS_API_KEY
-      },
-      body: JSON.stringify({
-        prompt: musicPrompt,
-        model_id: 'eleven_music_v1',
-        duration: 60, // Generate 1 minute of music
-        temperature: 0.7,
-        top_k: 40,
-        top_p: 0.8,
-        classifier_free_guidance: 3.0
-      })
-    });
+    // Try the music generation API first
+    let elevenLabsResponse;
+    let apiEndpoint = 'https://api.elevenlabs.io/v1/music/generate';
+    
+    try {
+      elevenLabsResponse = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': process.env.ELEVENLABS_API_KEY
+        },
+        body: JSON.stringify({
+          prompt: musicPrompt,
+          model_id: 'eleven_music_v1',
+          duration: 60,
+          temperature: 0.7,
+          top_k: 40,
+          top_p: 0.8,
+          classifier_free_guidance: 3.0
+        })
+      });
 
-    console.log('📡 ElevenLabs response status:', elevenLabsResponse.status);
+      console.log('📡 ElevenLabs Music API response status:', elevenLabsResponse.status);
+
+      // If music API fails with 422, try alternative models
+      if (elevenLabsResponse.status === 422) {
+        console.log('🔄 Music API returned 422, trying alternative models...');
+        
+        // Try with different model parameters
+        const alternativeModels = [
+          {
+            model_id: 'eleven_music_v1',
+            duration: 30, // Shorter duration
+            temperature: 0.5,
+            top_k: 20,
+            top_p: 0.9
+          },
+          {
+            model_id: 'eleven_music_v1',
+            duration: 45,
+            temperature: 0.6,
+            top_k: 30,
+            top_p: 0.85
+          }
+        ];
+
+        for (let i = 0; i < alternativeModels.length; i++) {
+          console.log(`🔄 Trying alternative model config ${i + 1}...`);
+          
+          elevenLabsResponse = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': process.env.ELEVENLABS_API_KEY
+            },
+            body: JSON.stringify({
+              prompt: musicPrompt,
+              ...alternativeModels[i]
+            })
+          });
+
+          console.log(`📡 Alternative config ${i + 1} response status:`, elevenLabsResponse.status);
+          
+          if (elevenLabsResponse.ok) {
+            console.log(`✅ Alternative config ${i + 1} worked!`);
+            break;
+          }
+        }
+
+        // If all music models fail, fallback to text-to-speech
+        if (!elevenLabsResponse.ok) {
+          console.log('🔄 All music models failed, falling back to text-to-speech...');
+          
+          const ttsPrompt = `[Music] A beautiful ${musicStyle} melody plays softly in the background. 
+          [Narrator] This is a song for ${recipient}, my ${relationship}. 
+          ${musicPrompt.substring(0, 200)}... 
+          The music swells with emotion, capturing the love and connection we share. 
+          [Music continues] The ${musicStyle} rhythm flows, telling our story through melody and harmony.`;
+          
+          apiEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech';
+          
+          elevenLabsResponse = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': process.env.ELEVENLABS_API_KEY
+            },
+            body: JSON.stringify({
+              text: ttsPrompt,
+              model_id: 'eleven_monolingual_v1',
+              voice_id: '21m00Tcm4TlvDq8ikWAM', // Default voice
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.75
+              }
+            })
+          });
+          
+          console.log('🔄 Fallback text-to-speech response status:', elevenLabsResponse.status);
+        }
+      }
+
+    } catch (fetchError) {
+      console.error('❌ Fetch error:', fetchError);
+      return res.status(500).json({ error: 'Failed to connect to ElevenLabs. Please check your internet connection and try again.' });
+    }
 
     if (!elevenLabsResponse.ok) {
       const errorData = await elevenLabsResponse.text();
@@ -92,17 +181,19 @@ app.post('/api/generate-music', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Music generated successfully with ElevenLabs Music API! 🎵🎼',
+      message: apiEndpoint.includes('/music/') 
+        ? 'Music generated successfully with ElevenLabs Music API! 🎵🎼' 
+        : 'Song generated successfully with ElevenLabs text-to-speech (fallback)! 🎵',
       audioData: audioBase64,
-      prompt: musicPrompt,
+      prompt: apiEndpoint.includes('/music/') ? musicPrompt : ttsPrompt,
       songDetails: {
         occasion,
         recipient,
         relationship,
         musicStyle,
         voiceStyle,
-        duration: '1 minute',
-        apiUsed: 'ElevenLabs Music API'
+        duration: apiEndpoint.includes('/music/') ? '1 minute' : 'Variable',
+        apiUsed: apiEndpoint.includes('/music/') ? 'ElevenLabs Music API' : 'Text-to-Speech (fallback)'
       }
     });
 
