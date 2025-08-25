@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SongGram - Transform your memories into personalized AI songs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .form-card {
+            background: rgba(30, 30, 40, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.15);
+            border-color: #feca57;
+            box-shadow: 0 0 20px rgba(254, 202, 87, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .dropdown {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-header:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(40, 40, 50, 0.95);
+            border-radius: 15px;
+            margin-top: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .dropdown.open .dropdown-options {
+            display: block;
+        }
+
+        .dropdown-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .dropdown-option.selected {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: #333;
+        }
+
+        .story-input {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: none;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(0, 184, 148, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 184, 148, 0.3);
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 15px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+        }
+
+        .error-message {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: none;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-card {
+                padding: 30px 20px;
+            }
+            
+            .brand {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand">SongGram</div>
+            <div class="tagline">Transform your memories into personalized AI songs</div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-title">Create Your Masterpiece</div>
+
+            <form id="songForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">🎉</div>
+                        What's the occasion?
+                    </label>
+                    <div class="dropdown" id="occasionDropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown('occasionDropdown')">
+                            <span id="occasionDisplay">Choose an occasion...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="anniversary">Anniversary</div>
+                            <div class="dropdown-option" data-value="birthday">Birthday</div>
+                            <div class="dropdown-option" data-value="valentines">Valentine's Day</div>
+                            <div class="dropdown-option" data-value="proposal">Proposal</div>
+                            <div class="dropdown-option" data-value="wedding">Wedding</div>
+                            <div class="dropdown-option" data-value="just-because">Just Because</div>
+                            <div class="dropdown-option" data-value="apology">Apology</div>
+                            <div class="dropdown-option" data-value="celebration">Celebration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">⭐</div>
+                        Who's this for?
+                    </label>
+                    <input type="text" class="form-input" id="recipient" placeholder="Enter their name..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">💖</div>
+                        Your relationship
+                    </label>
+                    <input type="text" class="form-input" id="relationship" placeholder="e.g., girlfriend, wife, husband..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">🎵</div>
+                        Music style
+                    </label>
+                    <div class="dropdown" id="musicStyleDropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown('musicStyleDropdown')">
+                            <span id="musicStyleDisplay">Choose a music style...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="pop">Pop</div>
+                            <div class="dropdown-option" data-value="rock">Rock</div>
+                            <div class="dropdown-option" data-value="jazz">Jazz</div>
+                            <div class="dropdown-option" data-value="classical">Classical</div>
+                            <div class="dropdown-option" data-value="country">Country</div>
+                            <div class="dropdown-option" data-value="r&b">R&B</div>
+                            <div class="dropdown-option" data-value="electronic">Electronic</div>
+                            <div class="dropdown-option" data-value="folk">Folk</div>
+                            <div class="dropdown-option" data-value="blues">Blues</div>
+                            <div class="dropdown-option" data-value="reggae">Reggae</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">🎤</div>
+                        Voice Selection
+                    </label>
+                    <div class="dropdown" id="voiceStyleDropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown('voiceStyleDropdown')">
+                            <span id="voiceStyleDisplay">Choose a voice style...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="warm">Warm & Romantic</div>
+                            <div class="dropdown-option" data-value="smooth">Smooth & Melodic</div>
+                            <div class="dropdown-option" data-value="powerful">Powerful & Emotional</div>
+                            <div class="dropdown-option" data-value="gentle">Gentle & Sweet</div>
+                            <div class="dropdown-option" data-value="passionate">Passionate & Intense</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <div class="form-icon">📖</div>
+                        Share your story
+                    </label>
+                    <textarea class="form-input story-input" id="story" placeholder="Tell us about your relationship, special moments, or what makes this person special to you..." maxlength="500" required></textarea>
+                    <div class="char-count" id="charCount">0/500</div>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <div class="success-icon">✅</div>
+                    Perfect! Your story is ready for a beautiful song
+                </div>
+
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    ✨ Generate My SongGram ✨
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>🎵 Creating your personalized song with ElevenLabs Music API...</div>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <div class="error-icon">❌</div>
+                <span id="errorText"></span>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <h3>🎵 Your SongGram is Ready!</h3>
+                <p id="resultMessage"></p>
+                <audio id="audioPlayer" class="audio-player" controls></audio>
+                <a href="#" id="downloadBtn" class="download-btn" download="songgram.mp3">Download SongGram</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown functionality
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isOpen = dropdown.classList.contains('open');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+            
+            // Toggle current dropdown
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        // Handle dropdown option selection
+        document.querySelectorAll('.dropdown-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const dropdown = e.target.closest('.dropdown');
+                const display = dropdown.querySelector('[id$="Display"]');
+                const value = e.target.dataset.value;
+                
+                display.textContent = e.target.textContent;
+                dropdown.classList.remove('open');
+                
+                // Store the selected value
+                if (dropdown.id === 'occasionDropdown') {
+                    dropdown.dataset.selectedValue = value;
+                } else if (dropdown.id === 'musicStyleDropdown') {
+                    dropdown.dataset.selectedValue = value;
+                } else if (dropdown.id === 'voiceStyleDropdown') {
+                    dropdown.dataset.selectedValue = value;
+                }
+                
+                checkFormCompletion();
+            });
+        });
+
+        // Character count for story
+        const storyInput = document.getElementById('story');
+        const charCount = document.getElementById('charCount');
+        
+        storyInput.addEventListener('input', () => {
+            const length = storyInput.value.length;
+            charCount.textContent = `${length}/500`;
+            checkFormCompletion();
+        });
+
+        // Check if form is complete
+        function checkFormCompletion() {
+            const occasion = document.getElementById('occasionDropdown').dataset.selectedValue;
+            const recipient = document.getElementById('recipient').value.trim();
+            const relationship = document.getElementById('relationship').value.trim();
+            const musicStyle = document.getElementById('musicStyleDropdown').dataset.selectedValue;
+            const voiceStyle = document.getElementById('voiceStyleDropdown').dataset.selectedValue;
+            const story = storyInput.value.trim();
+            
+            const isComplete = occasion && recipient && relationship && musicStyle && voiceStyle && story.length > 10;
+            
+            const successMessage = document.getElementById('successMessage');
+            if (isComplete) {
+                successMessage.classList.add('show');
+            } else {
+                successMessage.classList.remove('show');
+            }
+        }
+
+        // Form submission
+        document.getElementById('songForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const occasion = document.getElementById('occasionDropdown').dataset.selectedValue;
+            const recipient = document.getElementById('recipient').value.trim();
+            const relationship = document.getElementById('relationship').value.trim();
+            const musicStyle = document.getElementById('musicStyleDropdown').dataset.selectedValue;
+            const voiceStyle = document.getElementById('voiceStyleDropdown').dataset.selectedValue;
+            const story = storyInput.value.trim();
+            
+            if (!occasion || !recipient || !relationship || !musicStyle || !voiceStyle || story.length < 10) {
+                showError('Please fill in all fields and write a story (at least 10 characters).');
+                return;
+            }
+            
+            // Show loading state
+            showLoading(true);
+            hideError();
+            hideResult();
+            
+            try {
+                const response = await fetch('/api/generate-music', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        occasion,
+                        recipient,
+                        relationship,
+                        musicStyle,
+                        voiceStyle,
+                        story
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data);
+                } else {
+                    showError(data.error || 'Failed to generate music. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (show) {
+                loading.style.display = 'block';
+                generateBtn.disabled = true;
+                generateBtn.textContent = '🎵 Generating...';
+            } else {
+                loading.style.display = 'none';
+                generateBtn.disabled = false;
+                generateBtn.textContent = '✨ Generate My SongGram ✨';
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function showResult(data) {
+            const resultSection = document.getElementById('resultSection');
+            const resultMessage = document.getElementById('resultMessage');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            resultMessage.textContent = data.message;
+            
+            // Convert base64 audio data to blob and create audio URL
+            const audioBlob = base64ToBlob(data.audioData, 'audio/mpeg');
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            audioPlayer.src = audioUrl;
+            downloadBtn.href = audioUrl;
+            
+            resultSection.classList.add('show');
+            
+            // Scroll to result
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideResult() {
+            document.getElementById('resultSection').classList.remove('show');
+        }
+
+        function base64ToBlob(base64, mimeType) {
+            const byteCharacters = atob(base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            
+            const byteArray = new Uint8Array(byteNumbers);
+            return new Blob([byteArray], { type: mimeType });
+        }
+
+        // Initialize form
+        checkFormCompletion();
+    </script>
+</body>
+</html>

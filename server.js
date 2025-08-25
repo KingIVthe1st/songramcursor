@@ -1,172 +1,106 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware for parsing JSON
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use(express.static('.next/static'));
 app.use(express.static('public'));
 
-// Store songs in memory (in production this would be a database)
-global.songRequests = global.songRequests || new Map();
-
-// API route handlers
-app.get('/api/elevenlabs-voices', async (req, res) => {
+// ElevenLabs Music API endpoint
+app.post('/api/generate-music', async (req, res) => {
   try {
-    const apiKey = process.env.ELEVENLABS_API_KEY;
+    const { occasion, recipient, relationship, musicStyle, voiceStyle } = req.body;
     
-    if (!apiKey) {
-      return res.status(500).json({ error: 'ElevenLabs API key not configured' });
+    if (!occasion || !recipient || !relationship || !musicStyle) {
+      return res.status(400).json({ error: 'All fields are required' });
     }
 
-    const response = await fetch('https://api.elevenlabs.io/v1/voices', {
-      method: 'GET',
+    // Create a music generation prompt based on the form inputs
+    const musicPrompt = `Create a ${musicStyle} song that captures the emotion of ${occasion}. 
+    This song is dedicated to ${recipient}, who is my ${relationship}. 
+    The music should reflect the love, connection, and emotion of this relationship. 
+    Make it a heartfelt, romantic ${musicStyle} composition that would make someone feel special and loved. 
+    The track should be exactly 1 minute long and have a beautiful melody that matches the ${musicStyle} genre.`;
+
+    console.log('🎵 Calling ElevenLabs Music API...');
+    console.log('🎼 Music generation prompt:', musicPrompt);
+
+    // Call ElevenLabs Music API
+    const elevenLabsResponse = await fetch('https://api.elevenlabs.io/v1/music/generate', {
+      method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'xi-api-key': apiKey,
+        'Accept': 'audio/mpeg',
+        'Content-Type': 'application/json',
+        'xi-api-key': process.env.ELEVENLABS_API_KEY
       },
+      body: JSON.stringify({
+        prompt: musicPrompt,
+        model_id: 'eleven_music_v1',
+        duration: 60, // Generate 1 minute of music
+        temperature: 0.7,
+        top_k: 40,
+        top_p: 0.8,
+        classifier_free_guidance: 3.0
+      })
     });
 
-    if (!response.ok) {
-      throw new Error(`ElevenLabs API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error('Error fetching ElevenLabs voices:', error);
-    res.status(500).json({ error: 'Failed to fetch voices' });
-  }
-});
-
-app.post('/api/generate', async (req, res) => {
-  try {
-    const formData = req.body;
-    
-    console.log('🎵 Received song generation request for:', formData.recipient);
-    
-    // Validate required fields
-    if (!formData.occasion || !formData.recipient || !formData.relationship || !formData.story || !formData.selectedVoiceId) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Generate unique song ID for tracking
-    const songId = `song_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    
-    // Mock response
-    const mockResponse = {
-      songId: songId,
-      eta: 5,
-      provider: 'ElevenLabs',
-      processingTimeMs: Date.now()
-    };
-    
-    // Store the request for status checking
-    global.songRequests.set(songId, {
-      ...formData,
-      status: 'processing',
-      submittedAt: Date.now()
-    });
-    
-    // Simulate processing completion after 3 seconds
-    setTimeout(() => {
-      const request = global.songRequests.get(songId);
-      if (request) {
-        global.songRequests.set(songId, {
-          ...request,
-          status: 'completed',
-          audioUrl: '/demo-song.mp3',
-          completedAt: Date.now()
-        });
+    if (!elevenLabsResponse.ok) {
+      const errorData = await elevenLabsResponse.text();
+      console.error(`❌ ElevenLabs API error: ${elevenLabsResponse.status} - ${errorData}`);
+      
+      if (elevenLabsResponse.status === 401) {
+        return res.status(500).json({ error: 'Invalid ElevenLabs API key. Please check your configuration.' });
+      } else if (elevenLabsResponse.status === 400) {
+        return res.status(500).json({ error: 'Invalid request to ElevenLabs. The prompt may be too long or contain invalid characters.' });
+      } else if (elevenLabsResponse.status === 404) {
+        return res.status(500).json({ error: 'ElevenLabs Music API endpoint not found. This may be a temporary API issue. Please try again in a few minutes.' });
+      } else if (elevenLabsResponse.status === 429) {
+        return res.status(500).json({ error: 'ElevenLabs API rate limit exceeded. Please try again later.' });
+      } else {
+        return res.status(500).json({ error: `ElevenLabs API error: ${elevenLabsResponse.status}. Please try again.` });
       }
-    }, 3000);
-    
-    console.log('✅ Song generation request submitted:', songId);
-    res.json(mockResponse);
-  } catch (error) {
-    console.error('❌ Error in song generation:', error);
-    res.status(500).json({ error: 'Failed to process song generation request' });
-  }
-});
+    }
 
-app.get('/api/status', (req, res) => {
-  try {
-    const songId = req.query.songId;
-    
-    if (!songId) {
-      return res.status(400).json({ error: 'Song ID is required' });
-    }
-    
-    console.log(`🔍 Checking status for song: ${songId}`);
-    
-    const songData = global.songRequests.get(songId);
-    
-    if (!songData) {
-      console.log(`❌ Song not found: ${songId}`);
-      return res.status(404).json({ error: 'Song not found - it may have expired' });
-    }
-    
-    if (songData.status === 'completed') {
-      console.log(`✅ Song completed: ${songId}`);
-      return res.json({
-        status: 'completed',
-        audioUrl: songData.audioUrl || null,
-        audioData: songData.audioData || null,
-        lyrics: songData.lyrics || null,
-        voiceId: songData.selectedVoiceId,
-        voiceCategory: songData.selectedVoiceCategory,
-        voiceName: songData.voiceName || null
-      });
-    }
-    
-    // Check if processing has timed out
-    const processingTime = Date.now() - songData.submittedAt;
-    if (processingTime > 30000) {
-      console.log(`⏰ Song timed out: ${songId}`);
-      return res.json({
-        status: 'error',
-        error: 'Song generation timed out. Please try again.'
-      });
-    }
-    
-    // Still processing
-    console.log(`⏳ Song still processing: ${songId} (${Math.round(processingTime / 1000)}s)`);
+    // Get the audio data
+    const audioBuffer = await elevenLabsResponse.arrayBuffer();
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+
+    console.log('✅ Music generated successfully with ElevenLabs Music API!');
+    console.log('🎵 Audio buffer size:', audioBuffer.byteLength, 'bytes');
+
     res.json({
-      status: 'processing',
-      processingTime: processingTime
+      success: true,
+      message: 'Music generated successfully with ElevenLabs Music API! 🎵🎼',
+      audioData: audioBase64,
+      prompt: musicPrompt,
+      songDetails: {
+        occasion,
+        recipient,
+        relationship,
+        musicStyle,
+        voiceStyle,
+        duration: '1 minute',
+        apiUsed: 'ElevenLabs Music API'
+      }
     });
+
   } catch (error) {
-    console.error('❌ Error checking song status:', error);
-    res.status(500).json({ error: 'Failed to check song status' });
+    console.error('❌ Server error:', error);
+    res.status(500).json({ error: 'Failed to generate music. Please try again.' });
   }
 });
 
-// Serve Next.js static files
-app.get('*', (req, res) => {
-  // Try to serve from .next/server/app if it exists (Next.js 13+ App Router)
-  const nextPath = path.join(__dirname, '.next/server/app', req.path, 'index.html');
-  const nextIndexPath = path.join(__dirname, '.next/server/app/index.html');
-  const outPath = path.join(__dirname, 'out', req.path === '/' ? 'index.html' : req.path + '.html');
-  const outIndexPath = path.join(__dirname, 'out/index.html');
-
-  // Try different paths for serving the static files
-  if (fs.existsSync(nextPath)) {
-    res.sendFile(nextPath);
-  } else if (fs.existsSync(nextIndexPath)) {
-    res.sendFile(nextIndexPath);
-  } else if (fs.existsSync(outPath)) {
-    res.sendFile(outPath);
-  } else if (fs.existsSync(outIndexPath)) {
-    res.sendFile(outIndexPath);
-  } else {
-    res.status(404).send('Page not found');
-  }
+// Serve the main page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 SongGram Enhanced server running on port ${PORT}`);
-  console.log('✨ Features: 11 musical genres, intelligent prompts, 1-minute songs');
+app.listen(PORT, () => {
+  console.log(`🎵 SongGram server running on port ${PORT}`);
+  console.log(`🌐 Open http://localhost:${PORT} in your browser`);
 });
