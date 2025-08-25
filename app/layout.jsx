@@ -1,5 +1,3 @@
-import './globals.css';
-
 export const metadata = {
   title: 'Music Moments - Personalized AI Song Generation',
   description: 'Create personalized songs for your special moments using AI-powered voice generation. Transform your memories into meaningful music.',
