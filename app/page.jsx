@@ -26,7 +26,7 @@ export default function Home() {
             color: 'white',
             marginBottom: '1rem'
           }}>
-            🎵 Music Moments
+            🎵 Songgram
           </h1>
           <p style={{
             fontSize: '1.25rem',

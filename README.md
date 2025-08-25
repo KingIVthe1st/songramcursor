@@ -1,22 +1,23 @@
-# Music Moments
+# Songgram
 
-A modern web application for discovering and sharing music moments. Built with Next.js, React, and Tailwind CSS.
+A modern web application for creating personalized songs using AI-powered voice generation. Built with Next.js, React, and modern web technologies.
 
 ## Features
 
-- Modern, responsive UI built with Tailwind CSS
-- Next.js framework for optimal performance
-- TypeScript for type safety
-- Express.js backend integration
-- DOMPurify for security
+- **Personalized Song Creation**: Input occasion, recipient, relationship, and story to generate custom songs
+- **AI Voice Generation**: Powered by ElevenLabs for natural-sounding vocals
+- **Multiple Music Styles**: Choose from Pop, Rock, Country, Jazz, Classical, R&B, Folk, Electronic, Hip Hop, and Blues
+- **Voice Selection**: Choose from 22+ available AI voices
+- **Modern, Responsive UI**: Beautiful gradient design with glassmorphism effects
+- **Real-time Progress Tracking**: Monitor song generation status with live updates
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS
-- **Backend**: Express.js
-- **Security**: DOMPurify
-- **Validation**: Zod
+- **Frontend**: Next.js 14, React 18, JavaScript
+- **Styling**: Inline CSS with modern design patterns
+- **Backend**: Next.js API routes
+- **AI Integration**: ElevenLabs API for voice generation
+- **Deployment**: Render cloud platform
 
 ## Getting Started
 
@@ -24,6 +25,7 @@ A modern web application for discovering and sharing music moments. Built with N
 
 - Node.js 18.0.0 or higher
 - npm or yarn
+- ElevenLabs API key
 
 ### Installation
 
@@ -38,12 +40,18 @@ A modern web application for discovering and sharing music moments. Built with N
    npm install
    ```
 
-3. Run the development server:
+3. Set up environment variables:
+   ```bash
+   # Create .env.local file
+   ELEVENLABS_API_KEY=your_api_key_here
+   ```
+
+4. Run the development server:
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
@@ -56,6 +64,8 @@ A modern web application for discovering and sharing music moments. Built with N
 ## Deployment
 
 This project is configured for deployment on Render. The deployment process is automated and will build and deploy your application whenever you push to the main branch.
+
+**Live URL**: https://music-moments.onrender.com
 
 ## License
 
