@@ -30,43 +30,8 @@ export async function POST(request) {
     // Generate a unique song ID
     const songId = `song_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Enhanced prompt for ElevenLabs that takes into account the new musical styles
-    const enhancedPrompt = `Create a personalized song with the following specifications:
-
-OCCASION: ${occasion}
-RECIPIENT(S): ${recipientNames}
-RELATIONSHIP: ${relationship}
-MUSIC STYLE: ${musicStyle}
-STORY CONTEXT: ${story}
-
-MUSICAL DIRECTION:
-- Style: ${musicStyle}
-- For ${musicStyle === 'Trap Rap' ? 'trap rap with heavy 808s, hi-hats, and modern trap production' : 
-         musicStyle === 'Old Skool Hip Hop' ? 'classic hip hop with boom bap drums, sample-based production, and golden era vibes' :
-         musicStyle === 'Ballads' ? 'emotional ballad with piano, strings, and heartfelt vocals' :
-         musicStyle === 'Reggae' ? 'reggae with offbeat rhythms, bass-heavy grooves, and island vibes' :
-         musicStyle === 'Soul' ? 'soul music with gospel influences, rich harmonies, and emotional depth' :
-         musicStyle === 'Country' ? 'country music with acoustic guitars, storytelling lyrics, and southern charm' :
-         musicStyle === 'Jazz' ? 'jazz with sophisticated chord progressions, swing rhythms, and improvisational elements' :
-         musicStyle === 'Classical' ? 'classical composition with orchestral arrangements and formal structure' :
-         musicStyle === 'Electronic' ? 'electronic music with synthesizers, electronic drums, and modern production' :
-         musicStyle === 'Hip Hop' ? 'hip hop with strong beats, rap vocals, and urban energy' :
-         musicStyle === 'Blues' ? 'blues with guitar riffs, soulful vocals, and emotional depth' :
-         'standard production appropriate for the genre'}
-
-LYRICAL CONTENT:
-- Focus on the relationship: ${relationship}
-- Incorporate details from the story: ${story}
-- Make it personal and meaningful for ${recipientNames}
-- Match the emotional tone appropriate for ${occasion}
-
-PRODUCTION NOTES:
-- Ensure the ${musicStyle} style is authentically represented
-- Create appropriate instrumental backing for the selected genre
-- Maintain emotional connection throughout the song
-- Keep the focus on the personal story and relationship
-
-This should be a heartfelt, personalized song that captures the essence of the relationship and story while staying true to the ${musicStyle} genre.`;
+    // Create a much shorter, focused prompt for ElevenLabs (they have character limits)
+    const shortPrompt = `A heartfelt ${musicStyle} song for ${occasion}. This is for ${recipientNames}, who is my ${relationship}. ${story.substring(0, 200)}... The song should capture the love and connection we share.`;
 
     // Check if ElevenLabs API key is configured
     const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
@@ -79,6 +44,28 @@ This should be a heartfelt, personalized song that captures the essence of the r
     }
 
     try {
+      // First, let's get available voices to use a valid voice_id
+      const voicesResponse = await fetch('https://api.elevenlabs.io/v1/voices', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'xi-api-key': elevenLabsApiKey
+        }
+      });
+
+      if (!voicesResponse.ok) {
+        console.error('Failed to fetch voices from ElevenLabs');
+        return Response.json(
+          { error: 'Failed to initialize voice generation. Please try again.' },
+          { status: 500 }
+        );
+      }
+
+      const voices = await voicesResponse.json();
+      const defaultVoiceId = voices.voices?.[0]?.voice_id || '21m00Tcm4TlvDq8ikWAM'; // Fallback to a default voice
+
+      console.log('Using voice ID:', defaultVoiceId);
+
       // Call ElevenLabs API to generate the song
       const elevenLabsResponse = await fetch('https://api.elevenlabs.io/v1/text-to-speech', {
         method: 'POST',
@@ -88,8 +75,9 @@ This should be a heartfelt, personalized song that captures the essence of the r
           'xi-api-key': elevenLabsApiKey
         },
         body: JSON.stringify({
-          text: enhancedPrompt,
+          text: shortPrompt,
           model_id: 'eleven_multilingual_v2',
+          voice_id: defaultVoiceId,
           voice_settings: {
             stability: 0.5,
             similarity_boost: 0.75
@@ -100,24 +88,36 @@ This should be a heartfelt, personalized song that captures the essence of the r
       if (!elevenLabsResponse.ok) {
         const errorData = await elevenLabsResponse.text();
         console.error('ElevenLabs API error:', errorData);
-        return Response.json(
-          { error: 'Failed to generate song with ElevenLabs. Please try again.' },
-          { status: 500 }
-        );
+        
+        // Provide more specific error messages
+        if (elevenLabsResponse.status === 401) {
+          return Response.json(
+            { error: 'Invalid ElevenLabs API key. Please check your configuration.' },
+            { status: 500 }
+          );
+        } else if (elevenLabsResponse.status === 400) {
+          return Response.json(
+            { error: 'Invalid request to ElevenLabs. The text may be too long or contain invalid characters.' },
+            { status: 500 }
+          );
+        } else if (elevenLabsResponse.status === 429) {
+          return Response.json(
+            { error: 'ElevenLabs API rate limit exceeded. Please try again later.' },
+            { status: 500 }
+          );
+        } else {
+          return Response.json(
+            { error: `ElevenLabs API error: ${elevenLabsResponse.status}. Please try again.` },
+            { status: 500 }
+          );
+        }
       }
 
       // Get the audio data
       const audioBuffer = await elevenLabsResponse.arrayBuffer();
       
-      // In a real production app, you would:
-      // 1. Save the audio file to cloud storage (AWS S3, Google Cloud Storage, etc.)
-      // 2. Store the file URL in your database
-      // 3. Return the song ID for status checking
-      
-      // For now, we'll simulate the process and return success
-      // In production, implement proper file storage and database persistence
-      
       console.log('✅ Song generated successfully with ElevenLabs');
+      console.log('Audio buffer size:', audioBuffer.byteLength, 'bytes');
       console.log('Song Details:', {
         songId,
         occasion,
@@ -126,11 +126,12 @@ This should be a heartfelt, personalized song that captures the essence of the r
         musicStyle,
         voiceStyle,
         storyLength: story.length,
+        promptLength: shortPrompt.length,
         audioGenerated: true
       });
 
-      // Store song data (in a real app, save to database)
-      const songData = {
+      // Store song data in memory (in a real app, save to database)
+      songRequests.set(songId, {
         songId,
         occasion,
         recipientNames,
@@ -140,15 +141,16 @@ This should be a heartfelt, personalized song that captures the essence of the r
         story,
         status: 'completed',
         createdAt: new Date().toISOString(),
-        audioUrl: `/api/song/${songId}`, // This would be the actual cloud storage URL
-        processingTime: '45 seconds'
-      };
+        audioUrl: `/api/song/${songId}`,
+        processingTime: '2-3 minutes',
+        audioBuffer: audioBuffer // Store the actual audio data
+      });
 
       return Response.json({
         success: true,
         songId,
         message: 'Song generated successfully with ElevenLabs!',
-        prompt: enhancedPrompt
+        prompt: shortPrompt
       });
 
     } catch (elevenLabsError) {

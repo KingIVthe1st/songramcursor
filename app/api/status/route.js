@@ -15,13 +15,8 @@ export async function GET(request) {
       );
     }
 
-    // In a real implementation, you would:
-    // 1. Query your database for the song status
-    // 2. Check with ElevenLabs API for current status
-    // 3. Return the actual status and audio URL when complete
-
-    // For now, simulate a completed song with all the new fields
-    // This simulates the ElevenLabs generation process
+    // For now, we'll simulate the song being completed after a realistic time
+    // In production, you would query your database for the actual song status
     
     // Simulate processing time (2-5 minutes for real generation)
     const processingTime = Math.floor(Math.random() * 180) + 120; // 2-5 minutes in seconds
@@ -38,7 +33,9 @@ export async function GET(request) {
       audioUrl = `/api/song/${songId}`;
     }
     
-    const mockSongData = {
+    // For now, return simulated data
+    // In production, this would come from your database
+    const songData = {
       songId,
       status,
       occasion: 'Birthday', // This would come from the stored song data
@@ -57,9 +54,9 @@ export async function GET(request) {
     console.log('Time since creation:', timeSinceCreation, 'seconds');
     console.log('Processing time needed:', processingTime, 'seconds');
     console.log('Status:', status);
-    console.log('Returning data:', mockSongData);
+    console.log('Returning data:', songData);
 
-    return Response.json(mockSongData);
+    return Response.json(songData);
 
   } catch (error) {
     console.error('Error in status route:', error);
